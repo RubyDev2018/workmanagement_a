@@ -26,11 +26,13 @@ group :test do
   gem 'minitest-reporters',       '1.1.14'
   gem 'guard',                    '2.13.0'
   gem 'guard-minitest',           '2.4.4'
+  gem 'minitest', '~> 5.10.1' # 最新の5.11.1だとrailtiesと相性が悪い
 end
 
 group :production do
   gem 'pg', '0.18.4'
 end
+
 
 # Windows環境ではtzinfo-dataというgemを含める必要があります
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

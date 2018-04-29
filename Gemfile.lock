@@ -94,7 +94,7 @@ GEM
     method_source (0.9.0)
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
-    minitest (5.11.3)
+    minitest (5.10.3)
     minitest-reporters (1.1.14)
       ansi
       builder
@@ -204,6 +204,7 @@ DEPENDENCIES
   jbuilder (= 2.7.0)
   jquery-rails (= 4.3.1)
   listen (= 3.1.5)
+  minitest (~> 5.10.1)
   minitest-reporters (= 1.1.14)
   pg (= 0.18.4)
   puma (= 3.9.1)
