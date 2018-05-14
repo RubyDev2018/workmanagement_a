@@ -12,6 +12,10 @@ Rails.application.routes.draw do
   post   '/login',   to: 'sessions#create'
   delete '/logout',  to: 'sessions#destroy'
   resources :users
+  resources :account_activations, only: [:edit]
+  # GET "/acctount_activations/:id/edit"
+  #params[:id]  <== 有効化トークン
+  #Controller: params[:id]
 end
 
 
