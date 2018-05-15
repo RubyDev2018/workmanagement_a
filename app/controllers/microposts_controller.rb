@@ -11,7 +11,7 @@ class MicropostsController < ApplicationController
       @feed_items = current_user.feed.paginate(page: params[:page])
       render 'static_pages/home'
     end
-  end
+   end
 
   def destroy
     @micropost.destroy
