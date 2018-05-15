@@ -11,7 +11,8 @@ class UsersController < ApplicationController
   # Get /users/:id
   def show
     #=> app/views/users/show.html
-    @user = User.find(params[:id])
+    @user       = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
   
   # GET /users/new
