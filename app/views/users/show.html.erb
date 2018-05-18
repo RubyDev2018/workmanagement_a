@@ -16,11 +16,11 @@
   <div class="col-md-8">
     <%= render 'follow_form' if logged_in? %>
     <% if @user.microposts.any? %>
-      <h3>Microposts (<%= @user.microposts.count %>)</h3>
+      <h3>ツイート (<%= @user.microposts.count %>)</h3>
       <ol class="microposts">
         <%= render @microposts %>
       </ol>
-      <%= will_paginate @microposts %>
+     <%= will_paginate @microposts, :previous_label=>'前', :next_label=>'次' %>
     <% end %>
   </div>
 </div>
