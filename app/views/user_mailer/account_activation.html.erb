@@ -1,10 +1,13 @@
-<h1>Sample App</h1>
+<h1>RUN CLUB</h1>
 
-<p>Hi <%= @user.name %>,</p>
+<p><%= @user.name %>様</p>
 
 <p>
-Welcome to the Sample App! Click on the link below to activate your account:
+ようこそ、RUN CLUBへ! 下のリンクからアクセスして、アカウントを有効化しましょう。
 </p>
 
-<%= link_to "Activate", edit_account_activation_url(@user.activation_token,
+<%= link_to "このリンクからRUN CLUBへ！", edit_account_activation_url(@user.activation_token,
                                                     email: @user.email) %>
+                                                  
+                                                    
+                                                  
