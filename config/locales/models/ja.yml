@@ -12,3 +12,5 @@ ja:
         email: メールアドレス
         salon_id: サロン
         password: パスワード
+        password_confirmation: パスワード(確認)
+        
