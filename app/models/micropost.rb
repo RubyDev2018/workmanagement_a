@@ -6,6 +6,15 @@ class Micropost < ApplicationRecord
   validates :content, presence: true, length: { maximum: 140 }
   validate  :picture_size
 
+  def self.search(search) #ここでのself.はMicropost.を意味する
+    if search
+      where(['content LIKE ?', "%#{search}%"]) #検索とcontentの部分一致を表示。Micropost.は省略。
+    else
+      all #全て表示。Micropost.は省略。
+    end
+  end
+
+
   private
 
     # アップロードされた画像のサイズをバリデーションする

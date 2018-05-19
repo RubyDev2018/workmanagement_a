@@ -7,16 +7,24 @@
         <%= @user.name %>
       </h1>
     </section>
-    
      <section class="stats">
         <%= render 'shared/stats' %>
       </section>
-    
   </aside>
   <div class="col-md-8">
     <%= render 'follow_form' if logged_in? %>
     <% if @user.microposts.any? %>
       <h3>ツイート (<%= @user.microposts.count %>)</h3>
+      
+       <!--検索拡張機能  -->
+      <p>ツイート検索</p>
+      <%= form_tag user_path, :method => 'get' do %>
+        <p>
+          <%= text_field_tag :search, params[:search] %>
+          <%= submit_tag "検索", :name => nil %>
+        </p>
+      <% end %>
+      
       <ol class="microposts">
         <%= render @microposts %>
       </ol>

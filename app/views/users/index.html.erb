@@ -3,8 +3,16 @@
 
 <%= will_paginate @customers, { :previous_label => '&lt 前へ', :next_label => '次へ &gt' } %>
 
+<!--  検索拡張機能  -->
+<p>名前検索</p>
+<%= form_tag(users_path, method: :get) do %>
+  <%= text_field_tag :search %>
+  <%= submit_tag '検索', :name => nil %>
+<% end %>
+
 <ul class="users">
   <%= render @users %>
 </ul>
+
 
 <%= will_paginate @customers, { :previous_label => '&lt 前へ', :next_label => '次へ &gt' } %>

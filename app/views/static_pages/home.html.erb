@@ -15,6 +15,16 @@
     </aside>
   <div class="col-md-8">
     <h3>ツイート</h3>
+    
+     <!--検索拡張機能  -->
+    <p>ツイート検索</p>
+    <%= form_tag root_path, :method => 'get' do %>
+      <p>
+        <%= text_field_tag :search, params[:search] %>
+        <%= submit_tag "検索", :name => nil %>
+      </p>
+    <% end %> 
+    
     <%= render 'shared/feed' %>
   </div>
   </div>

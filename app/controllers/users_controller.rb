@@ -6,14 +6,15 @@ class UsersController < ApplicationController
   before_action :admin_user,     only: [:destroy]
   
   def index
-    @users = User.paginate(page: params[:page])
+   @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
   end
   
   # Get /users/:id
   def show
     #=> app/views/users/show.html
     @user       = User.find(params[:id])
-    @microposts = @user.microposts.paginate(page: params[:page])
+    # 検索拡張機能として.search(params[:search])を追加    
+    @microposts = @user.microposts.paginate(page: params[:page]).search(params[:search])
   end
   
   # GET /users/new
