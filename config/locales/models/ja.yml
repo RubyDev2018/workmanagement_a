@@ -13,4 +13,6 @@ ja:
         salon_id: サロン
         password: パスワード
         password_confirmation: パスワード(確認)
+      micropost:
+        content: 内容
         
