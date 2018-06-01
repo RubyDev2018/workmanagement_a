@@ -14,13 +14,12 @@
 
       <%= f.label :remember_me, class: "checkbox inline" do %>
         <%= f.check_box :remember_me %>
-        <span>パスワードをPCに記録する</span>
+        <span>ログイン情報を記録する</span>
       <% end %>
 
       <%= f.submit "ログイン", class: "btn btn-primary" %>
     <% end %>
 
-    <p><%= link_to "アカウントの作成はお済みですか？
-                    まだなら新規登録！", signup_path %></p>
+    <p>アカウント作成は<%= link_to "こちら", signup_path %>から</p>
   </div>
 </div>

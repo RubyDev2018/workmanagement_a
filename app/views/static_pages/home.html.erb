@@ -31,13 +31,17 @@
 <% else %>
 
 <div class="center jumbotron">
-  <h1>RUN CLUB</h1>
+  <h1>勤怠システム</h1>
 
-  <h2>
-    Run Clubでマラソンの目標設定や日々の記録をシェアしよう！
-  </h2>
+  <%= link_to "ログイン", login_path, class: "btn btn-lg btn-primary" %>
 
-  <%= link_to "新規登録", signup_path, class: "btn btn-lg btn-primary" %>
+
+  <p>
+  アカウント作成は  
+  <%= link_to "こちら", signup_path%>
+  </p>
+
+
 </div>
 
 
