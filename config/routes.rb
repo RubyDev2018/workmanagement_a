@@ -8,6 +8,11 @@ Rails.application.routes.draw do
   get  '/help',    to: 'static_pages#help'
   get  '/about',   to: 'static_pages#about'
   get  '/contact', to: 'static_pages#contact'
+  get  '/attendance_display', to: 'static_pages#attendance_display'
+  patch '/attendance_display', to: 'static_pages#attendance_display'
+  get  '/attendance_edit', to: 'static_pages#attendance_edit'
+  patch '/attendance_edit', to: 'static_pages#attendance_edit'
+  
   get  '/signup',  to: 'users#new'
   post '/signup',  to: 'users#create'
   get    '/login',   to: 'sessions#new'

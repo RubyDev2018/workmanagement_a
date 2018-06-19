@@ -44,14 +44,13 @@ class UsersController < ApplicationController
     # app/views/users/edit.html.erb
   end
   
-  
   # PATCH /users/:id
   def update
     @user = User.find(params[:id])
     if @user.update_attributes(user_params)
       #Success
-      flash[:success] = "プロフィールが編集されました"
-      redirect_to @user
+      flash[:success] = "ユーザー情報を更新しました"
+      redirect_to attendance_display_path
     else
       #Failure
       # => @user.errors.full_messages
@@ -84,8 +83,8 @@ class UsersController < ApplicationController
   private
     def user_params
       params.require(:user).permit(
-        :name, :email, :password, 
-        :password_confirmation)
+        :name, :email, :affiliation, :remarks,
+        :password, :password_confirmation)
     end
     
     # ログイン済みユーザーかどうか確認

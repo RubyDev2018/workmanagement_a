@@ -115,7 +115,6 @@ class User < ApplicationRecord
     end
   end
 
-
   private
   
     def downcase_email

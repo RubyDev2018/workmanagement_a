@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
       if user.activated?
         log_in user
         params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-        redirect_back_or user
+        redirect_back_or attendance_display_path
       else
         message  = "アカウントは有効ではありません "
         message += "メールの受信内容を確認し、リンクからアカウントを有効化して下さい"
