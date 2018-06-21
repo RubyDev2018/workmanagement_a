@@ -102,14 +102,14 @@
       
          <!-- 在社時間の表示 %.2f 小数点第２位 -->
       <td class="table-body">　
-          <% if !@attendance.attendance_time.nil? && !@attendance.leaving_time.nil? && date == Date.today %>
+          <% if !@attendance.attendance_time.nil? && !@attendance.leaving_time.nil? && date == Date.current %>
               <%= format("%.2f", (@attendance.leaving_time - @attendance.attendance_time)/3600) %>
           <% end %>          
       </td>
       
       <!--備考-->>
       <td>
-        　<%= @user.remarks if date == Date.today%>
+        　<%= @user.remarks if date == Date.current%>
       </td>
       
       

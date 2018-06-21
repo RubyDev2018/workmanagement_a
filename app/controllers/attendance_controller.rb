@@ -11,7 +11,7 @@ class AttendanceController < ApplicationController
   
    @attenadnce = Attendance.new 
    @attendance = Attendance.create
-   #@attendance = Attendance.find(1)
+   @attendance = Attendance.find(1)
    # findがないと、出社、退社時刻両方が反映されない
   
     
@@ -44,13 +44,13 @@ class AttendanceController < ApplicationController
     end
    @attenadnce = Attendance.new 
    @attendance = Attendance.create
-   
+   @attendance = Attendance.find(1)
      # 表示月があれば取得する
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
     else
       # 表示月がなければ今月分を表示する
-      @first_day = Date.new(Date.today.year, Date.today.month, 1)
+      @first_day = Date.new(Date.current.year, Date.today.month, 1)
     end
      #今月末のデータを取得
      @last_day = @first_day.end_of_month

@@ -60,7 +60,7 @@
       
        <!-- 在社時間の表示  -->
       <td class="table-body">
-          <% if !@attendance.attendance_time.nil? && !@attendance.leaving_time.nil? && date == Date.today %>
+          <% if !@attendance.attendance_time.nil? && !@attendance.leaving_time.nil? && date == Date.current %>
               <%= format("%.2f", (@attendance.leaving_time - @attendance.attendance_time)/3600) %>
           <% end %>       
       </td>
