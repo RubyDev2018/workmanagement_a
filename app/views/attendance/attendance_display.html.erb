@@ -78,7 +78,7 @@
   
       <!-- 出社時間と退社時間が空なら表示  -->
       <td class="table-body">
-         <% if  date == Date.today && @attendance.attendance_time.nil? && @attendance.leaving_time.nil? %>
+         <% if  date == Date.current && @attendance.attendance_time.nil? && @attendance.leaving_time.nil? %>
            <%= button_to "出社",attendance_display_path(attendance: "attendance_time"), class: "btn btn-sm btn-primary" %>
          <% end %>
        </td>
@@ -95,7 +95,7 @@
     
       <!-- 出社時間入力済みかつ退社時間が空なら表示  -->
       <td class="table-body">
-         <% if  date == Date.today && !@attendance.attendance_time.nil? && @attendance.leaving_time.nil? %>
+         <% if  date ==  Date.current && !@attendance.attendance_time.nil? && @attendance.leaving_time.nil? %>
            <%= button_to "退社",attendance_display_path(attendance: "leaving_time"), class: "btn btn-sm btn-primary" %>
          <% end %>
       </td>

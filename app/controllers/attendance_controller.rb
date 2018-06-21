@@ -11,8 +11,9 @@ class AttendanceController < ApplicationController
   
    @attenadnce = Attendance.new 
    @attendance = Attendance.create
+   #@attendance = Attendance.find(1)
    # findがないと、出社、退社時刻両方が反映されない
-   @attendance = Attendance.find(1) 
+  
     
     ##「出社」「退社」の処理
     #「出社」ボタン押下
@@ -41,8 +42,9 @@ class AttendanceController < ApplicationController
     if logged_in?
      @user  = current_user 
     end
-    @attendance = Attendance.new
-    @attendance = Attendance.find(1)
+   @attenadnce = Attendance.new 
+   @attendance = Attendance.create
+   
      # 表示月があれば取得する
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
