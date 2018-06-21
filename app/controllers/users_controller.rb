@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:index, :edit, 
+  before_action :work_management_user, only: [:index, :edit, 
                                        :update, :destroy,
                                        :following, :followers]
   before_action :correct_user,   only: [:edit, :update]
@@ -79,16 +79,23 @@ class UsersController < ApplicationController
     render 'show_follow'
   end
   
+  # 基本情報の更新
+  def update_basic_info
+    # 1つしかないので先頭を更新
+    @basic_info = Basicinfo.find_by(id: 1)
+  end
+  
+  
   
   private
     def user_params
       params.require(:user).permit(
         :name, :email, :affiliation, :remarks,
-        :password, :password_confirmation)
+        :password, :password_confirmation, :attendance_time)
     end
     
     # ログイン済みユーザーかどうか確認
-      def logged_in_user
+      def work_management_user
         unless logged_in?
          #GET   /users/:id/edit 
          #PATCH /users/:

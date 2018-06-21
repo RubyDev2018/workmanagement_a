@@ -22,16 +22,16 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     get login_path
     post login_path, params: { session: { email:    @user.email,
                                           password: 'password' } }
-    assert is_logged_in?
+    assert is_?
     assert_redirected_to attendance_display_path
     follow_redirect!
-    assert_template 'static_pages/attendance_display'
-    assert_select "a[href=?]", login_path, count: 2
+    assert_template 'attendance/attendance_display'
+    assert_select "a[href=?]", login_path, count: 1
     assert_select "a[href=?]", logout_path
     assert_select "a[href=?]", attendance_display_path
     
     delete logout_path
-    assert_not is_logged_in?
+    assert_not is_?
     assert_redirected_to root_url
     # 2番目のウィンドウでログアウトをクリックするユーザーをシミュレートする
     delete logout_path

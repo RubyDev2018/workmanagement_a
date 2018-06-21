@@ -1,23 +1,5 @@
-class StaticPagesController < ApplicationController
-  
-  
-  
-  def home
-    if logged_in?
-      @micropost  = current_user.microposts.build
-      # 検索拡張機能として.search(params[:search])を追加 
-      @feed_items = current_user.feed.paginate(page: params[:page]).search(params[:search])
-    end
-  end
-
-  def help
-  end
-  
-  def about
-  end  
-  
-  def contact
-  end  
+class AttendanceController < ApplicationController
+   before_action :work_management_user
   
   def attendance_display
    if logged_in?
@@ -26,7 +8,24 @@ class StaticPagesController < ApplicationController
    #コメントアウト
     # @first_day = Time.current.beginning_of_month.to_datetime 
     # @last__day = Time.current.end_of_month.to_datetime 
-   
+  
+   @attenadnce = Attendance.new 
+   @attendance = Attendance.create
+   # findがないと、出社、退社時刻両方が反映されない
+   @attendance = Attendance.find(1) 
+    
+    ##「出社」「退社」の処理
+    #「出社」ボタン押下
+    if params[:attendance]=="attendance_time"
+       @attendance.update_column(:attendance_time, Time.current)
+       @attendance.update_column(:day, Time.current)
+       @attendance.save
+    elsif params[:attendance] == 'leaving_time'
+       @attendance.update_column(:leaving_time, Time.current)
+       @attendance.update_column(:day, Time.current)
+       @attendance.save
+    end  
+  
     # 表示月があれば取得
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
@@ -36,15 +35,14 @@ class StaticPagesController < ApplicationController
     end
      #今月末のデータを取得
      @last_day = @first_day.end_of_month
-     
-     @user.attendance_time = DateTime.now
   end
-  
+   
   def attendance_edit
     if logged_in?
      @user  = current_user 
     end
-    
+    @attendance = Attendance.new
+    @attendance = Attendance.find(1)
      # 表示月があれば取得する
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
@@ -54,6 +52,6 @@ class StaticPagesController < ApplicationController
     end
      #今月末のデータを取得
      @last_day = @first_day.end_of_month
-    
   end
-end      
+  
+end

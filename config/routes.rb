@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  
   get 'password_resets/new'
 
   get 'password_resets/edit'
@@ -8,10 +9,18 @@ Rails.application.routes.draw do
   get  '/help',    to: 'static_pages#help'
   get  '/about',   to: 'static_pages#about'
   get  '/contact', to: 'static_pages#contact'
-  get  '/attendance_display', to: 'static_pages#attendance_display'
-  patch '/attendance_display', to: 'static_pages#attendance_display'
-  get  '/attendance_edit', to: 'static_pages#attendance_edit'
-  patch '/attendance_edit', to: 'static_pages#attendance_edit'
+
+  # 出勤画面表示・編集
+  get  '/attendance_display', to: 'attendance#attendance_display'
+  post '/attendance_display', to: 'attendance#attendance_display'
+  patch '/attendance_display', to: 'attendance#attendance_display'
+  get  '/attendance_edit', to: 'attendance#attendance_edit'
+  post '/attendance_edit', to: 'attendance#attendance_edit'
+  patch '/attendance_edit', to: 'attendance#attendance_edit'
+
+  # 基本情報
+  
+  get '/basic_info',   to: 'users#update_basic_info'
   
   get  '/signup',  to: 'users#new'
   post '/signup',  to: 'users#create'

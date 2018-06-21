@@ -12,10 +12,8 @@
     </tr>
   </thead>
 
-<%= link_to "勤怠を編集", attendance_display_path,
-     :style=>"color:white;", class: "btn btn-sm btn-primary" %>
   <tbody class="table-header">
-    <%= form_for @user, :url => {:action => 'attendance_display'} do |f| %>
+    <%= form_for(@attendance, url: attendance_display_path) do |f| %>
      <%(@first_day..@last_day).each do |date|%> 
      <% wday  = %w[日 月 火 水 木 金 土]%> 
      <% youbi = wday[Time.local(date.year, date.month, date.day).wday]%>
@@ -32,22 +30,39 @@
       </td>
       
       <!--出勤時間 -->
+      <% if  !@attendance.attendance_time.nil? && !@attendance.leaving_time.nil? && @attendance.day == date  %>
+      <td class="table-body">
+        <%= f.datetime_select :attendance_time, 
+            {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
+            {class: "form-control datetime-width"} %>
+      </td>
+      <!--退社時間 -->  
+      <td class="table-body">
+        <%= f.datetime_select :leaving_time, 
+            {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
+            {class: "form-control datetime-width"} %>
+      </td>
+      
+      <%  else %>
       <td class="table-body">
         <%= f.datetime_select :attendance_time_edit, 
             {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
             {class: "form-control datetime-width"} %>
       </td>
-    
+      
       <!--退社時間 -->  
       <td class="table-body">
         <%= f.datetime_select :leaving_time_edit, 
             {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
             {class: "form-control datetime-width"} %>
       </td>
+      <% end %>
       
        <!-- 在社時間の表示  -->
       <td class="table-body">
-        
+          <% if !@attendance.attendance_time.nil? && !@attendance.leaving_time.nil? && date == Date.today %>
+              <%= format("%.2f", (@attendance.leaving_time - @attendance.attendance_time)/3600) %>
+          <% end %>       
       </td>
       
        <!-- 備考の表示  -->
@@ -61,6 +76,7 @@
 </table>  
 
 <div class="center">
-    <%= submit_tag "編集を保存する", style:"width:300px", class: "btn btn-lg btn-primary" %>
+    <%= link_to "キャンセル",attendance_display_path, style:"width:300px", class: "btn btn-lg btn-primary" %>
+    <%= f.submit "編集", style:"width:300px", class: "btn btn-lg btn-primary" %>
 </div>
       <% end %>   

@@ -3,6 +3,9 @@
     <%= link_to "勤怠システム", login_path, id: "logo" %>
     <nav>
       <ul class="nav navbar-nav navbar-right">
+    　　<% if !logged_in? %>　  
+       <li><%= link_to "トップへ", root_path %></li>
+        <% end %> 
         <% if logged_in? %>
           <li><%= link_to "トップへ", attendance_display_path %></li>
           <li class="dropdown">
