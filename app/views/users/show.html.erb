@@ -1,35 +1,122 @@
 <% provide(:title, @user.name) %>
-<div class="row">
-  <aside class="col-md-4">
-    <section class="user_info">
-      <h1>
-        <%= gravatar_for @user %>
-        <%= @user.name %>
-      </h1>
-    </section>
-     <section class="stats">
-       
-        <%= render 'shared/stats' %>
-      </section>
-  </aside>
-  <div class="col-md-8">
-    <%= render 'follow_form' if logged_in? %>
-    <% if @user.microposts.any? %>
-      <h3>ツイート (<%= @user.microposts.count %>)</h3>
-      
-       <!--検索拡張機能  -->
-      <p>ツイート検索</p>
-      <%= form_tag user_path, :method => 'get' do %>
-        <p>
-          <%= text_field_tag :search, params[:search] %>
-          <%= submit_tag "検索", :name => nil %>
-        </p>
+
+<table class="txt1 table table-bordered table-striped table-condensed table-status">
+  <thead>
+    <tr>
+      <th class="table-header">
+        <%= link_to "←", user_url(params: { id: @user.id, first_day: @first_day.prev_month }), style:"color:white", class: 'btn btn-default btn-primary' if current_user == @user %>
+        　　<%= @first_day.strftime("%Y年%m月") %>　時間管理表　　
+    　　<%= link_to "→", user_url(params: { id: @user.id, first_day: @first_day.next_month }), style:"color:white", class: 'btn btn-default btn-primary' if current_user == @user %>
+      </th>
+      <th class="table-header">
+        指定勤務開始時間
+      </th>
+      <th colspan="3" class="table-header">基本時間 
+      <%= format("%.2f", ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60) if !@basic_info.basic_work_time.blank? %>
+      </th>
+      <th class="table-header">初日　<%= @first_day.strftime("%m/%d") %></th>
+    </tr>
+    <tr>
+
+      <th class="table-header">所属　<%= @user.affiliation %> </th>
+      <th class="table-header">氏名　<%= @user.name %></th>
+      <th class="table-header">コード</th>
+      <th class="table-header">  </th>
+      <th class="table-header">出勤日数　<%= @attendance_days %>日</th>
+      <th class="table-header">締め　<%= @last_day.strftime("%m/%d") %></th>
+    </tr>
+  </thead>
+</table>
+
+<%= link_to "勤怠を編集", attendance_edit_url(@attendance, params: { id: @user.id, first_day: @first_day }), 
+                          :style=>"color:white;", class: "btn btn-sm btn-primary"   %>
+
+
+<table class="txt1 table table-bordered table-striped table-condensed table-status">
+  <thead>
+    <tr>
+      <th rowspan="2" class="table-header">日付</th>
+      <th rowspan="2" class="table-header">曜日</th>
+      <th colspan="3" class="table-header">出社</th>
+      <th colspan="3" class="table-header">退社</th>
+      <th rowspan="2" class="table-header">在社時間</th>
+      <th rowspan="2" class="table-header">備考</th>
+    </tr>
+    
+    <tr>    
+     <th             class="table-header">時</th>
+     <th             class="table-header">分</th>
+     <th             class="table-header">  </th>
+     <th             class="table-header">時</th>
+     <th             class="table-header">分</th>
+     <th             class="table-header">  </th>
+    </tr>
+  </thead>
+    
+  <tbody>
+    <% @attendances.each do |attendance| %>
+      <%= form_for(attendance, url: attendance_update_path ) do |f| %>
+      <%= f.hidden_field :user_id, :value => "#{@user.id}"%>
+      <%= f.hidden_field :id, :value => "#{attendance.id}"%>
+        <tr>
+          <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
+          <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
+          <!-- 出社時間の表示  -->
+          <td class="table-body">
+            <%= attendance.attendance_time.hour if !attendance.attendance_time.nil? %>
+          </td>
+          <td class="table-body">
+            <%= attendance.attendance_time.min if !attendance.attendance_time.nil? %>
+          </td>
+          <td class="table-body">
+            <!-- 自身の勤怠で出社時間と退社時間が空なら表示  -->
+            <% if current_user == @user && attendance.attendance_time.nil? && attendance.leaving_time.nil? && attendance.day == Date.today %>
+              <%= f.hidden_field :update_type, :value => "attendance_time"%>
+              <%= f.submit "出社", class: "btn btn-sm btn-primary" %>
+            <% end %>
+          </td>
+
+          <!-- 退社時間の表示  -->
+          <td class="table-body">
+            <%= attendance.leaving_time.hour if !attendance.leaving_time.nil? %>
+          </td>
+          <td class="table-body">
+            <%= attendance.leaving_time.min if !attendance.leaving_time.nil? %>
+          </td>
+          <td class="table-body">
+            <!-- 出社時間入力済みかつ退社時間が空なら表示  -->
+            <% if current_user == @user && !attendance.attendance_time.nil? && attendance.leaving_time.nil? && attendance.day == Date.today %>
+              <%= f.hidden_field :update_type, :value => "leaving_time"%>
+              <%= f.submit "退社", class: "btn btn-sm btn-primary" %>
+            <% end %>
+          </td>
+          
+          <!-- 在社時間の表示  -->
+          <td class="table-body">
+            <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
+              <%= format("%.2f", (attendance.leaving_time - attendance.attendance_time)/3600) %>
+            <% end %>
+          </td>
+
+          <!-- 備考の表示  -->
+          <td class="table-body">
+            <% if !attendance.remarks.nil? %>
+              <%= attendance.remarks %>
+            <% end %>
+          </td>
+        </tr>
       <% end %>
-      
-      <ol class="microposts">
-        <%= render @microposts %>
-      </ol>
-     <%= will_paginate @microposts, :previous_label=>'前', :next_label=>'次' %>
     <% end %>
-  </div>
-</div>
+
+    <tr>
+      <td colspan="2" class="table-body"> 
+        <%= format("%.2f", @attendance_sum) %>
+      </td>
+      <td colspan="6" class="table-body"></td>
+      <td class="table-body">
+        <%= format("%.2f", @work_sum) %>
+      </td>
+      <td colspan="1" class="table-body"></td>
+    </tr>
+  </tbody>
+</table>

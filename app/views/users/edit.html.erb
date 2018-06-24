@@ -15,15 +15,6 @@
       <%= f.label :所属 %>
       <%= f.text_field :affiliation, class: 'form-control' %>
       
-      <%= f.label :備考 %>
-      <%= f.text_field :remarks, class: 'form-control'%> 
-      
-      <%= f.label :時刻 %>
-      <%= f.datetime_select :attendance_time, 
-            {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
-            {class: "form-control datetime-width"} %>
-      
-
       <%= f.label :パスワード %>
       <%= f.password_field :password, class: 'form-control' %>
 

@@ -11,16 +11,22 @@ Rails.application.routes.draw do
   get  '/contact', to: 'static_pages#contact'
 
   # 出勤画面表示・編集
-  get  '/attendance_display', to: 'attendance#attendance_display'
-  post '/attendance_display', to: 'attendance#attendance_display'
-  patch '/attendance_display', to: 'attendance#attendance_display'
+  get  '/attendance_update', to: 'attendance#attendance_update'
+  post '/attendance_update', to: 'attendance#attendance_update'
+  patch '/attendance_update', to: 'attendance#attendance_update'
+  
   get  '/attendance_edit', to: 'attendance#attendance_edit'
   post '/attendance_edit', to: 'attendance#attendance_edit'
   patch '/attendance_edit', to: 'attendance#attendance_edit'
 
+  get  '/update_all', to: 'attendance#update_all'
+  post '/update_all', to: 'attendance#update_all'
+  patch '/update_all', to: 'attendance#update_all'
+
   # 基本情報
-  
-  get '/basic_info',   to: 'users#update_basic_info'
+  get '/basic_info',   to: 'users#edit_basic_info'
+  patch '/basic_info',   to: 'users#update_basic_info'
+  get '/basic_info',   to: 'users#new'
   
   get  '/signup',  to: 'users#new'
   post '/signup',  to: 'users#create'
@@ -28,7 +34,7 @@ Rails.application.routes.draw do
   post   '/login',   to: 'sessions#create'
   delete '/logout',  to: 'sessions#destroy'
 
-  resources :attendance
+  
   resources :users do
     member do
       #  /users/:id...
@@ -44,7 +50,7 @@ Rails.application.routes.draw do
   resources :password_resets, only: [:new, :create, :edit, :update]
   resources :microposts,      only: [:create, :destroy] 
   resources :relationships,   only: [:create, :destroy]
-  
+  resource  :attendances
 end
 
 
