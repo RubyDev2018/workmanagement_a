@@ -1,11 +1,11 @@
 <% provide(:title, @user.name) %>
 
 <%= form_for(@user, url: update_all_path, method: :post) do |fb| %>
+<!--update_all_pathに、userのidと今月の値を渡す-->
   <%= hidden_field_tag :id, @user.id %>
   <%= hidden_field_tag :first_day, @first_day %>
 
-
-  <table class="txt1 table table-bordered table-striped table-condensed table-status">
+  <table class="table table-bordered table-striped table-condensed">
     <thead>
     <tr>
       <th rowspan="1" class="table-header">日付</th>
@@ -18,26 +18,29 @@
   </thead>
     
     <tbody>
+        <!-- attendance_controller.rbの@attendancesの中身を見にいく-->
       　  <% @attendances.each do |attendance| %>
+      　 <!--一括申請：参考URL https://rails.densan-labs.net/form/bulk_registration_form.html--> 
           <%= fields_for("attendance[]", attendance) do |f| %>
             <tr>
+              <!--日付-->
               <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
+              <!--曜日-->
               <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
               
                 <!-- 出社時間の表示  -->
-                <td class="table-body">
-                   <%= f.datetime_select :attendance_time, 
-                     {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
-                     {class: "form-control datetime-width"} %> 
-                </td>
+              <td class="table-body">
+                 <%= f.datetime_select :attendance_time, 
+                   {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
+                   {class: "form-control datetime-width"} %> 
+              </td>
                 
-                <!-- 退社時間の表示  -->
-                <td class="table-body">
-                  <%= f.datetime_select :leaving_time, 
-                    {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
-                    {class: "form-control datetime-width"}  %>
-                </td>
-              
+              <!-- 退社時間の表示  -->
+              <td class="table-body">
+                <%= f.datetime_select :leaving_time, 
+                  {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
+                  {class: "form-control datetime-width"}  %>
+              </td>
               
               <!-- 在社時間の表示  -->
               <td class="table-body">
@@ -56,6 +59,8 @@
     </tbody>
   </table>
   <div class="center">
+
+      <!--user_urlにて、当該ユーザーの今月月を表示-->
       <%= link_to "キャンセル", user_url(@user, params: { id: @user.id, first_day: @first_day }),
                 style:"width:200px; color:white", class:"btn btn-lg btn-primary" %>
       <%= fb.submit "編集", style:"width:200px", class: "btn btn-lg btn-primary" %>

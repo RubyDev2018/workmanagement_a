@@ -13,33 +13,37 @@ class UsersController < ApplicationController
   # Get /users/:id
   def show
     #=> app/views/users/show.html
-    @user       = User.find(params[:id])
+    @user = User.find(params[:id])
     
     # 曜日表示用に使用する
     @youbi = %w[日 月 火 水 木 金 土]
+
+    #基本情報
+    @basic_info = BasicInfo.find_by(id: 1)
    
-   
-    # 表示月があれば取得する
+    # 既に表示月があれば、表示月を取得する
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
     else
-      # ないなら今月分を表示する
+      # 表示月が無ければ、今月分を表示
       @first_day = Date.new(Date.today.year, Date.today.month, 1)
     end
+    #最終日を取得する
     @last_day = @first_day.end_of_month
 
-    # 期間分のデータチェック
+    # 今月の初日から最終日の期間分を取得
     (@first_day..@last_day).each do |date|
       # 該当日付のデータがないなら作成する
+      #(例)user1に対して、今月の初日から最終日の値を取得する
       if !@user.attendances.any? {|attendance| attendance.day == date }
-        attend = Attendance.create(user_id: @user.id, day: date)
-        attend.save
+        linked_attendance = Attendance.create(user_id: @user.id, day: date)
+        linked_attendance.save
       end
     end
     
-    # 表示期間の勤怠データを日付順にソートして取得
+    # 表示期間の勤怠データを日付順にソートして取得 show.html.erb、 <% @attendances.each do |attendance| %>からの情報
     @attendances = @user.attendances.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
-    # 出勤日数を取得
+    # 出勤日数
     @attendance_days = @attendances.where.not(attendance_time: nil, leaving_time: nil).count
     # 在社時間総数
     @work_sum = 0
@@ -48,20 +52,23 @@ class UsersController < ApplicationController
     end
     @work_sum /= 3600
     
-    
-    #総合勤務時間　= 出金日数*基本時間
+    #基本時間・指定勤務時間・総合勤務時間初期値入力
+    @basic_work_info = 0
+    @basic_specified_work_info = 0
     @attendance_sum = 0
-    @basic_infos = 0
-    # 基本情報取得
-    @basic_info = BasicInfo.find_by(id: 1)
     
+    #基本情報がnilであれば、新しく作成
     if @basic_info.nil?
       @basic_info = BasicInfo.new
       @basic_info.save
     end
     
-    @basic_infos = ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
-    @attendance_sum = @attendance_days* @basic_infos   
+    #基本時間
+    @basic_work_info = ((@basic_info.basic_work_time.hour*60) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
+    #指定勤務時間
+    @basic_specified_work_info = ((@basic_info.specified_work_time.hour*60) + @basic_info.specified_work_time.min)/60 if !@basic_info.specified_work_time.blank?
+    #総合勤務時間　= 出勤日数*基本時間  
+    @attendance_sum = @attendance_days* @basic_work_info   
 
     # 検索拡張機能として.search(params[:search])を追加    
     @microposts = @user.microposts.paginate(page: params[:page]).search(params[:search])
@@ -71,7 +78,6 @@ class UsersController < ApplicationController
   def new
    @user = User.new
    # => form_for @user
-   @basic_info = BasicInfo.new
   end
   
   # Post /users
@@ -79,9 +85,10 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       #Success
-      @user.send_activation_email
-      flash[:info] = "RUN CLUBより送られてくるメールをご確認下さい"
-      redirect_to root_url
+      #@user.send_activation_email
+      log_in @user
+      flash[:info] = "ユーザー登録が完了しました"
+      redirect_to @user
     else
       #Failure
       render 'new'
@@ -98,7 +105,7 @@ class UsersController < ApplicationController
   # PATCH /users/:id
   def update
     @user = User.find(params[:id])
-    if @user.update_attributes(user_params) && 
+    if @user.update_attributes(user_params) 
       #Success
       flash[:success] = "ユーザー情報を更新しました"
       redirect_to current_user
@@ -110,11 +117,11 @@ class UsersController < ApplicationController
   end
   
   # 基本情報の編集
+  # get '/basic_info',   to: 'users#edit_basic_info'
   def edit_basic_info
-    # 1つしかないので先頭を取得
+    # 管理者用の基本情報を取得
     @basic_info = BasicInfo.find_by(id: 1)
-   
-    # なければ作成する
+    # 基本情報のnilであれば、新規に作成(初期状態)
     if @basic_info.nil?
       @basic_info = BasicInfo.new
       @basic_info.save
@@ -134,7 +141,6 @@ class UsersController < ApplicationController
       flash[:danger] = "基本情報を更新して下さい"
       redirect_to current_user
     end
-   
   end
   
   # DELETE /users/:id

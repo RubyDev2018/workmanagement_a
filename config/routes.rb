@@ -26,7 +26,6 @@ Rails.application.routes.draw do
   # 基本情報
   get '/basic_info',   to: 'users#edit_basic_info'
   patch '/basic_info',   to: 'users#update_basic_info'
-  get '/basic_info',   to: 'users#new'
   
   get  '/signup',  to: 'users#new'
   post '/signup',  to: 'users#create'
