@@ -53,9 +53,9 @@ class UsersController < ApplicationController
     #総合勤務時間　= 出金日数*基本時間
     @attendance_sum = 0
     @basic_infos = 0
-    @basic_infos = ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60
+    @basic_infos = ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
     @attendance_sum = @attendance_days* @basic_infos   
-    
+
     # 検索拡張機能として.search(params[:search])を追加    
     @microposts = @user.microposts.paginate(page: params[:page]).search(params[:search])
   end
@@ -91,7 +91,7 @@ class UsersController < ApplicationController
   # PATCH /users/:id
   def update
     @user = User.find(params[:id])
-    if @user.update_attributes(user_params)
+    if @user.update_attributes(user_params) && 
       #Success
       flash[:success] = "ユーザー情報を更新しました"
       redirect_to current_user
@@ -106,6 +106,7 @@ class UsersController < ApplicationController
   def edit_basic_info
     # 1つしかないので先頭を取得
     @basic_info = BasicInfo.find_by(id: 1)
+   
     # なければ作成する
     if @basic_info.nil?
       @basic_info = BasicInfo.new
@@ -117,14 +118,13 @@ class UsersController < ApplicationController
   def update_basic_info
     # 1つしかないので先頭を更新
     @basic_info = BasicInfo.find_by(id: 1)
-   
-    if @basic_info.update_attributes(basic_info_params)
+    if @basic_info.update_attributes(basic_info_params) && !@basic_info.basic_work_time.blank?
       #Success
-      flash[:success] = "ユーザー情報を更新しました"
+      flash[:success] = "基本情報を更新しました"
       redirect_to current_user
-    else
+    else 
       #Failure
-      # => @user.errors.full_messages
+      flash[:danger] = "基本情報を更新して下さい"
       redirect_to current_user
     end
    
