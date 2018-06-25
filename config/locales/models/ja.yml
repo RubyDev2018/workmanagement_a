@@ -10,6 +10,7 @@ ja:
         updated_at: 更新日時
         birthday: 生年月日
         email: メールアドレス
+        affiliation: 所属
         salon_id: サロン
         password: パスワード
         password_confirmation: パスワード(確認)

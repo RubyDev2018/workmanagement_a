@@ -12,7 +12,7 @@
         指定勤務開始時間
       </th>
       <th colspan="3" class="table-header">基本時間 
-      <%= format("%.2f", ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60) if !@basic_info.basic_work_time.blank? %>
+      <%= format("%.2f", @basic_infos) if !@basic_info.basic_work_time.blank? %>
       </th>
       <th class="table-header">初日　<%= @first_day.strftime("%m/%d") %></th>
     </tr>

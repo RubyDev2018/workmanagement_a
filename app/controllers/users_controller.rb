@@ -9,6 +9,7 @@ class UsersController < ApplicationController
    @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
   end
   
+  
   # Get /users/:id
   def show
     #=> app/views/users/show.html
@@ -17,8 +18,6 @@ class UsersController < ApplicationController
     # 曜日表示用に使用する
     @youbi = %w[日 月 火 水 木 金 土]
    
-     # 基本情報取得
-    @basic_info = BasicInfo.find_by(id: 1)
    
     # 表示月があれば取得する
     if !params[:first_day].nil?
@@ -53,6 +52,14 @@ class UsersController < ApplicationController
     #総合勤務時間　= 出金日数*基本時間
     @attendance_sum = 0
     @basic_infos = 0
+    # 基本情報取得
+    @basic_info = BasicInfo.find_by(id: 1)
+    
+    if @basic_info.nil?
+      @basic_info = BasicInfo.new
+      @basic_info.save
+    end
+    
     @basic_infos = ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
     @attendance_sum = @attendance_days* @basic_infos   
 
