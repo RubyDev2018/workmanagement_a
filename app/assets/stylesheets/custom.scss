@@ -307,12 +307,14 @@ span.picture {
 .table-header {
   font-weight: 600;
   text-align: center;
+  display: table-cell;
 }
 
 
 .table-body {
   font-weight: 600;
   text-align: center;
+  display: table-cell;
 }
 
 /* 勤怠編集ページの時間記入 */
