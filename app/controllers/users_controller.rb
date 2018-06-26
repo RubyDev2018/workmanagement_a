@@ -64,9 +64,10 @@ class UsersController < ApplicationController
     end
     
     #基本時間
-    @basic_work_info = ((@basic_info.basic_work_time.hour*60) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
+    @basic_work_info = ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
     #指定勤務時間
-    @basic_specified_work_info = ((@basic_info.specified_work_time.hour*60) + @basic_info.specified_work_time.min)/60 if !@basic_info.specified_work_time.blank?
+    @basic_specified_work_info = ((@basic_info.specified_work_time.hour*60.0) + @basic_info.specified_work_time.min)/60 if !@basic_info.specified_work_time.blank?
+    
     #総合勤務時間　= 出勤日数*基本時間  
     @attendance_sum = @attendance_days* @basic_work_info   
 
