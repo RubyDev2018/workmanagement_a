@@ -65,6 +65,7 @@ class AttendanceController < ApplicationController
       attendance.update_attributes(attendance_time: nil, leaving_time: nil)
     # 出勤・退社時間が表記されていれば、備考・出勤・退社時刻を入力する  
     elsif !item["attendance_time(4i)"].blank? && !item["leaving_time(4i)"].blank? 
+      flash[:success] = "出社・退社時刻が反映されました！"
       attendance.update_attributes(item.permit(:remarks, :attendance_time, :leaving_time))  
     # 出社または退社のどちらか一方に値か入力がされてないときは、nilを返す(EXOR)  
     elsif  item["attendance_time(4i)"].blank? ^ item["leaving_time(4i)"].blank?
