@@ -7,12 +7,12 @@
        <li><%= link_to "トップへ", root_path %></li>
         <% end %> 
         <% if logged_in? %>
+          <li><%= link_to "トップへ", current_user %></li>
           <% if current_user.admin? %>
-            <li><%= link_to "全てのユーザー", users_path %></li>
+            <li><%= link_to "ユーザ一覧", users_path %></li>
             <li><%= link_to "基本情報の修正", basic_info_path %></li>  
           <% end %>
           
-          <li><%= link_to "トップへ", current_user %></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               アカウント <b class="caret"></b>
