@@ -7,7 +7,7 @@
     <%= form_for(@basic_info) do |f| %>
         <%= render 'shared/error_messages', object: f.object %>
 
-        <%= f.label :specified_work_time, "指定勤務開始時間"%>
+        <%= f.label :specified_work_time, "指定勤務時間"%>
         <%= f.time_field :specified_work_time, class: 'form-control' %>
 
         <%= f.label :basic_work_time, "基本勤務時間"%>

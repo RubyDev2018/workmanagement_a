@@ -11,7 +11,7 @@
             style:"color:white", class: 'btn btn-default btn-primary' %>
      </th>
       <th class="table-header">
-        指定勤務時間 <%= format("%.2f", @basic_specified_work_info) %>
+        指定勤務時間 <%= format("%.2f", @basic_specified_work_info) if !@basic_info.specified_work_time.blank? %>
       </th>
       <th colspan="3" class="table-header">基本時間 
       <%= format("%.2f", @basic_work_info) if !@basic_info.basic_work_time.blank? %>

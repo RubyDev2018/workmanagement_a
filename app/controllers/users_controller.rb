@@ -132,14 +132,22 @@ class UsersController < ApplicationController
   def update_basic_info
     # 1つしかないので先頭を更新
     @basic_info = BasicInfo.find_by(id: 1)
-    if @basic_info.update_attributes(basic_info_params) && !@basic_info.basic_work_time.blank?
+    if @basic_info.update_attributes(basic_info_params) && !@basic_info.basic_work_time.blank? && !@basic_info.specified_work_time.blank?
       #Success
       flash[:success] = "基本情報を更新しました"
       redirect_to current_user
-    else 
+    elsif @basic_info.basic_work_time.blank?  && @basic_info.specified_work_time.blank?
       #Failure
-      flash[:danger] = "基本情報を更新して下さい"
-      redirect_to current_user
+      flash[:danger] = "指定勤務時間及び基本勤務時間を更新して下さい"
+      redirect_to basic_info_path
+    elsif @basic_info.basic_work_time.blank?  && !@basic_info.specified_work_time.blank?
+      #Failure
+      flash[:danger] = "基本勤務時間を更新して下さい"
+      redirect_to basic_info_path
+     elsif !@basic_info.basic_work_time.blank?  && @basic_info.specified_work_time.blank?
+      #Failure
+      flash[:danger] = "指定勤務時間を更新して下さい"
+      redirect_to basic_info_path
     end
   end
   
