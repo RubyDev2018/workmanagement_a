@@ -63,6 +63,7 @@ class AttendanceController < ApplicationController
     # 出勤・退社時間がblankであれば、出勤・退社時刻にnilを返す
     if item["attendance_time(4i)"].blank? && item["leaving_time(4i)"].blank? 
       attendance.update_attributes(attendance_time: nil, leaving_time: nil)
+      attendance.update_attributes(item.permit(:remarks))
     # 出勤・退社時間が表記されていれば、備考・出勤・退社時刻を入力する  
     elsif !item["attendance_time(4i)"].blank? && !item["leaving_time(4i)"].blank? 
       attendance.update_attributes(item.permit(:remarks, :attendance_time, :leaving_time))  
@@ -70,6 +71,7 @@ class AttendanceController < ApplicationController
     elsif  item["attendance_time(4i)"].blank? ^ item["leaving_time(4i)"].blank?
       flash[:danger] = "出社時刻と退社時刻の両方を入力して下さい！" 
       attendance.update_attributes(attendance_time: nil, leaving_time: nil)
+      attendance.update_attributes(item.permit(:remarks))
     end
   end
    #user_urlにて、当該ユーザーの今月月を表示   

@@ -303,10 +303,13 @@ span.picture {
 
 
 /* table */
-
-.table-header {
-  font-weight: 600;
+.header{
   text-align: center;
+}
+.table-header{
+  display: inline-block;
+  text-align: center;
+  font-weight: 600;
   display: table-cell;
 }
 

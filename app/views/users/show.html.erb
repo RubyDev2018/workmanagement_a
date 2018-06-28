@@ -1,6 +1,7 @@
 <% provide(:title, @user.name) %>
 
 <table class="table table-bordered table-striped table-condensed">
+  <div class = "header">  
   <thead>
     <tr>
       <th class="table-header">
@@ -27,6 +28,7 @@
       <th class="table-header">締め　<%= @last_day.strftime("%m/%d") %></th>
     </tr>
   </thead>
+  </div>
 </table>
 
 <!--attendance_edit_pathに、userのidと今月の値を渡す-->
