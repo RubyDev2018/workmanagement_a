@@ -1,8 +1,9 @@
 <% provide(:title, @user.name) %>
 
 <table class="table table-bordered table-striped table-condensed">
-  <div class = "header">  
+  
   <thead>
+   <div class = "header">  
     <tr>
       <th class="table-header">
         <%= link_to "◀︎", user_url(params: { id: @user.id, first_day: @first_day.prev_month }), 
@@ -27,8 +28,8 @@
       <th class="table-header">出勤日数　<%= @attendance_days %>日</th>
       <th class="table-header">締め　<%= @last_day.strftime("%m/%d") %></th>
     </tr>
+  </div>  
   </thead>
-  </div>
 </table>
 
 <!--attendance_edit_pathに、userのidと今月の値を渡す-->
