@@ -17,10 +17,10 @@ class UsersController < ApplicationController
     
     # 曜日表示用に使用する
     @youbi = %w[日 月 火 水 木 金 土]
-
+    
     #基本情報
     @basic_info = BasicInfo.find_by(id: 1)
-   
+    
     # 既に表示月があれば、表示月を取得する
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])

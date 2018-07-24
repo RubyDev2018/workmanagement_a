@@ -1,9 +1,8 @@
 <% provide(:title, @user.name) %>
 
 <table class="table table-bordered table-striped table-condensed">
-  
   <thead>
-   <div class = "header">  
+   <div class = "header"> 
     <tr>
       <th class="table-header">
         <%= link_to "◀︎", user_url(params: { id: @user.id, first_day: @first_day.prev_month }), 
