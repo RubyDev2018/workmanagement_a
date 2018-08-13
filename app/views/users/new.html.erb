@@ -15,6 +15,15 @@
       <%= f.label :所属 %>
       <%= f.text_field :affiliation, class: 'form-control' %>
 
+      <%= f.label :card_id,"カードID" %>
+      <%= f.text_field :card_id, class: 'form-control' %>
+
+      <%= f.label :basic_work_time, "基本勤務時間"%>
+      <%= f.time_field :basic_work_time, class: 'form-control' %>
+
+      <%= f.label :specified_work_time, "指定勤務時間"%>
+      <%= f.time_field :specified_work_time, class: 'form-control' %>
+
       <%= f.label :パスワード %>
       <%= f.password_field :password, class: 'form-control' %>
 

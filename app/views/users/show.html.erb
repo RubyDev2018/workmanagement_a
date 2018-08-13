@@ -34,16 +34,28 @@
 <!--attendance_edit_pathに、userのidと今月の値を渡す-->
 <%= link_to "勤怠を編集", attendance_edit_url(@attendance, params: { id: @user.id, first_day: @first_day }), 
                           :style=>"color:white;", class: "btn btn-sm btn-primary"   %>
+<%= link_to "CSV出力", 
+                          :style=>"color:white;", class: "btn btn-sm btn-primary"   %>
+
 
 <table class="table table-bordered table-striped table-condensed">
   <thead>
     <tr>
-      <th rowspan="2" class="table-header">日付</th>
-      <th rowspan="2" class="table-header">曜日</th>
+      <th rowspan="3" class="table-header">残業申請</th>
+      <th rowspan="3" class="table-header">日付</th>
+      <th rowspan="3" class="table-header">曜日</th>
+      <th colspan="8" class="table-header">【実績】</th>
+      <th colspan="5" class="table-header">所定外勤務</th>
+    </tr>
+    <tr>
       <th colspan="3" class="table-header">出社</th>
       <th colspan="3" class="table-header">退社</th>
       <th rowspan="2" class="table-header">在社時間</th>
       <th rowspan="2" class="table-header">備考</th>
+      <th colspan="2" class="table-header">終了予定時刻</th>
+      <th rowspan="3" class="table-header">時間外時間</th>
+      <th rowspan="3" class="table-header">業務処理内容</th>
+      <th rowspan="3" class="table-header">指示者確認㊞</th>
     </tr>
     
     <tr>    
@@ -53,6 +65,8 @@
      <th             class="table-header">時</th>
      <th             class="table-header">分</th>
      <th             class="table-header">  </th>
+     <th             class="table-header">時</th>
+     <th             class="table-header">分</th>
     </tr>
   </thead>
     
@@ -63,6 +77,14 @@
       <%= f.hidden_field :user_id, :value => "#{@user.id}"%>
       <%= f.hidden_field :id, :value => "#{attendance.id}"%>
         <tr>
+          <!--残業申請-->
+          <td class="table-body">
+            <div class="inline-applicatioins">
+              <%  if current_user == @user %>
+                <a style="color:white; " class= "btn btn-sm btn-primary" href="#test-applicatioin<%  %>" data-effect="mfp-zoom-in">残業申請</a>
+              <% end %>
+            </div>
+          </td>
      　　　  <!--日付-->
           <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
           <!--曜日-->
@@ -110,6 +132,30 @@
               <%= attendance.remarks %>
             <% end %>
           </td>
+          
+          
+          <!-- 終了予定時刻  -->
+          <td class="table-body">
+
+          </td>
+          <td class="table-body">
+
+          </td>
+
+          <!-- 時間外時間  -->
+          <td class="table-body">
+          </td>
+
+          <!-- 業務処理内容  -->
+          <td class="table-body">
+
+          </td>
+
+          <!-- 指示者確認㊞  -->
+          <td class="table-body">
+
+          </td>
+          
         </tr>
       <% end %>
     <% end %>
@@ -122,7 +168,7 @@
       <td class="table-body">
         <%= format("%.2f", @work_sum) %>
       </td>
-      <td colspan="1" class="table-body"></td>
+      <td colspan="7" class="table-body"></td>
     </tr>
   </tbody>
 </table>

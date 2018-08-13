@@ -11,7 +11,9 @@ ja:
         birthday: 生年月日
         email: メールアドレス
         affiliation: 所属
-        salon_id: サロン
+        card_id: カードID
+        basic_work_time: 基本勤務時間
+        specified_work_time: 指定勤務時間
         password: パスワード
         password_confirmation: パスワード(確認)
       micropost:
