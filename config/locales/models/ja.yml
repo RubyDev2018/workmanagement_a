@@ -13,7 +13,8 @@ ja:
         affiliation: 所属
         card_id: カードID
         basic_work_time: 基本勤務時間
-        specified_work_time: 指定勤務時間
+        specified_work_start_time: 指定勤務開始時間
+        specified_work_end_time: 指定勤務終了時間
         password: パスワード
         password_confirmation: パスワード(確認)
       micropost:

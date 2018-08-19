@@ -21,8 +21,11 @@
       <%= f.label :basic_work_time, "基本勤務時間"%>
       <%= f.time_field :basic_work_time, class: 'form-control' %>
 
-      <%= f.label :specified_work_time, "指定勤務時間"%>
-      <%= f.time_field :specified_work_time, class: 'form-control' %>
+      <%= f.label :specified_work_start_time, "指定勤務開始時間"%>
+      <%= f.time_field :specified_work_start_time, class: 'form-control' %>
+
+      <%= f.label :specified_work_end_time, "指定勤務終了時間"%>
+      <%= f.time_field :specified_work_end_time, class: 'form-control' %>
 
       <%= f.label :パスワード %>
       <%= f.password_field :password, class: 'form-control' %>

@@ -57,19 +57,11 @@ class UsersController < ApplicationController
     @basic_specified_work_info = 0
     @attendance_sum = 0
     
-    #基本情報がnilであれば、新しく作成
-    if @basic_info.nil?
-      @basic_info = BasicInfo.new
-      @basic_info.save
-    end
-    
     #基本時間
-    @basic_work_info = ((@basic_info.basic_work_time.hour*60.0) + @basic_info.basic_work_time.min)/60 if !@basic_info.basic_work_time.blank?
-    #指定勤務時間
-    @basic_specified_work_info = ((@basic_info.specified_work_time.hour*60.0) + @basic_info.specified_work_time.min)/60 if !@basic_info.specified_work_time.blank?
-    
+    @basic_work_info = ((@user.basic_work_time.hour*60.0) + @user.basic_work_time.min)/60 if !@user.basic_work_time.blank?
+      
     #総合勤務時間　= 出勤日数*基本時間  
-    @attendance_sum = @attendance_days* @basic_work_info   
+    @attendance_sum = @attendance_days*@basic_work_info 
 
     # 検索拡張機能として.search(params[:search])を追加    
     @microposts = @user.microposts.paginate(page: params[:page]).search(params[:search])
@@ -178,7 +170,8 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(
         :name, :email, :affiliation, :remarks,
-        :password, :password_confirmation, :attendance_time, :card_id, :basic_work_time, :specified_work_time)
+        :password, :password_confirmation, :attendance_time, :card_id, :basic_work_time, 
+        :specified_work_start_time, :specified_work_end_time)
     end
     
     def basic_info_params
