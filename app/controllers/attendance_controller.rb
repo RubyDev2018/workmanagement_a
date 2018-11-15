@@ -11,12 +11,17 @@ class AttendanceController < ApplicationController
       # 出社時刻を更新 
       if !@attendance.update_column(:attendance_time, Time.current)
         flash[:error] = "出社時間の入力に失敗しました"
+      else
+        flash[:success] = "出社時間を入力しました"
       end
     elsif @update_type == 'leaving_time'
       # 退社時刻を更新 
       if !@attendance.update_column(:leaving_time, Time.current)
         flash[:error] = "退社時間の入力に失敗しました"
+      else
+        flash[:success] = "退社時間を入力しました"
       end
+       
     end  
     #出社・退社押下した日付及び現在のuser idを@userに返す
     @user = User.find(params[:attendance][:user_id])
@@ -59,23 +64,62 @@ class AttendanceController < ApplicationController
    #当月の各日付ごとに出社時間及び退社時間をチェックする
    params[:attendance].each do |id, item|
     attendance = Attendance.find(id)
-    
     # 出勤・退社時間がblankであれば、出勤・退社時刻にnilを返す
-    if item["attendance_time(4i)"].blank? && item["leaving_time(4i)"].blank? 
-      attendance.update_attributes(attendance_time: nil, leaving_time: nil)
-      attendance.update_attributes(item.permit(:remarks))
-    # 出勤・退社時間が表記されていれば、備考・出勤・退社時刻を入力する  
-    elsif !item["attendance_time(4i)"].blank? && !item["leaving_time(4i)"].blank? 
-      attendance.update_attributes(item.permit(:remarks, :attendance_time, :leaving_time))  
-    # 出社または退社のどちらか一方に値か入力がされてないときは、nilを返す(EXOR)  
-    elsif  item["attendance_time(4i)"].blank? ^ item["leaving_time(4i)"].blank?
-      flash[:danger] = "出社時刻と退社時刻の両方を入力して下さい！" 
-      attendance.update_attributes(attendance_time: nil, leaving_time: nil)
-      attendance.update_attributes(item.permit(:remarks))
+    if item["attendance_time(4i)"].blank?
+      attendance.update_attributes(attendance_time: nil)
+    elsif item["leaving_time(4i)"].blank?
+      attendance.update_attributes(leaving_time: nil)  
     end
+    # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
+    if !item["attendance_time(4i)"].blank? 
+      attendance.update_attributes(item.permit(:attendance_time))
+    end 
+    
+    if !item["leaving_time(4i)"].blank?
+      attendance.update_attributes(item.permit(:leaving_time))
+    end
+    
+    if !item["remarks"].blank?
+      attendance.update_attributes(item.permit(:remarks))
+    end  
+    
   end
    #user_urlにて、当該ユーザーの今月月を表示   
    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end 
 
+  def oneday_overtime
+    @user = User.find(params[:attendance][:user_id])
+
+    # 終了予定時刻がNULLなら更新しない
+    if params[:attendance]["expected_end_time(4i)"].blank? || params[:attendance]["expected_end_time(5i)"].blank?
+      flash[:danger] = "残業申請時間を記入してください"
+      redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
+      return
+    end
+
+
+     attendance = Attendance.find(params[:attendance][:id]) 
+    
+     attendance.update_attributes(attendance_params)
+     
+       # 終了予定時間があれば更新
+        if !params[:attendance]["expected_end_time(4i)"].blank? || !params[:attendance]["expected_end_time(5i)"].blank?
+          attendance.update_column(:expected_end_time, 
+          Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, 
+          params[:attendance]["expected_end_time(4i)"].to_i, params[:attendance]["expected_end_time(5i)"].to_i))
+        end
+    
+      # 翌日チェックONなら終了予定時間を＋1日する
+        if !params[:check].blank?
+          attendance.update_column(:expected_end_time, attendance.expected_end_time+1.day)
+        end
+    flash[:success] = "残業申請しました"
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
+  end
+
+    private
+      def attendance_params
+        params.require(:attendance).permit(:business_content)
+      end
 end

@@ -63,6 +63,8 @@ class UsersController < ApplicationController
     #総合勤務時間　= 出勤日数*基本時間  
     @attendance_sum = @attendance_days*@basic_work_info 
 
+    
+
     # 検索拡張機能として.search(params[:search])を追加    
     @microposts = @user.microposts.paginate(page: params[:page]).search(params[:search])
   end
@@ -72,6 +74,47 @@ class UsersController < ApplicationController
    @user = User.new
    # => form_for @user
   end
+  
+  #SCVファイル出力
+  def attendance_table
+    #=> app/views/users/show.html
+    @user = User.find(params[:id])
+    
+    # 曜日表示用に使用する
+    @youbi = %w[日 月 火 水 木 金 土]
+    
+    #基本情報
+    @basic_info = BasicInfo.find_by(id: 1)
+    
+     # 既に表示月があれば、表示月を取得する
+    if !params[:first_day].nil?
+      @first_day = Date.parse(params[:first_day])
+    else
+      # 表示月が無ければ、今月分を表示
+      @first_day = Date.new(Date.today.year, Date.today.month, 1)
+    end
+    #最終日を取得する
+    @last_day = @first_day.end_of_month
+    
+    # 表示期間の勤怠データを日付順にソートして取得 show.html.erb、 <% @attendances.each do |attendance| %>からの情報
+    @attendances = @user.attendances.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
+    # 出勤日数
+    @attendance_days = @attendances.where.not(attendance_time: nil, leaving_time: nil).count
+    # 在社時間総数
+    @work_sum = 0
+    @attendances.where.not(attendance_time: nil, leaving_time: nil).each do |attendance|
+      @work_sum += attendance.leaving_time - attendance.attendance_time
+    end
+    @work_sum /= 3600
+    
+    # CSV出力ファイル名を指定
+    respond_to do |format|
+      format.csv do
+        send_data render_to_string, filename: "#{@first_day.strftime("%Y年%m月")}_#{@user.name}.csv", type: :csv
+      end
+    end
+  end
+  
   
   # Post /users
   def create
@@ -165,12 +208,11 @@ class UsersController < ApplicationController
     render 'show_follow'
   end
   
-  
   private
     def user_params
       params.require(:user).permit(
         :name, :email, :affiliation, :remarks,
-        :password, :password_confirmation, :attendance_time, :card_id, :basic_work_time, 
+        :password, :password_confirmation, :attendance_time, :card_id, :basic_work_time, :employee_number,
         :specified_work_start_time, :specified_work_end_time)
     end
     

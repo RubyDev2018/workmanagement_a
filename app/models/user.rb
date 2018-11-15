@@ -24,7 +24,8 @@ class User < ApplicationRecord
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: { case_sensitive: false }
   validates :affiliation, presence: true
-  validates :card_id, presence: true
+  validates(:card_id, :employee_number, presence: true)
+  validates(:card_id, :employee_number, uniqueness: true)
   validates :basic_work_time, presence: true
   validates :specified_work_start_time, presence: true
   validates :specified_work_end_time, presence: true

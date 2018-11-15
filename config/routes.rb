@@ -50,6 +50,14 @@ Rails.application.routes.draw do
   resources :microposts,      only: [:create, :destroy] 
   resources :relationships,   only: [:create, :destroy]
   resource  :attendances
+  
+  # CSV
+  get '/attendance_table', to: 'users#attendance_table', as: 'attendance_table'
+  
+  # 残業申請関係
+  post '/attendance/oneday_overtime', to: 'attendance#oneday_overtime', as: 'oneday_overtime'
+  
+  
 end
 
 
