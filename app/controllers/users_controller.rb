@@ -23,6 +23,7 @@ class UsersController < ApplicationController
     
     # 既に表示月があれば、表示月を取得する
     if !params[:first_day].nil?
+      #https://techacademy.jp/magazine/18710
       @first_day = Date.parse(params[:first_day])
     else
       # 表示月が無ければ、今月分を表示
@@ -35,6 +36,7 @@ class UsersController < ApplicationController
     (@first_day..@last_day).each do |date|
       # 該当日付のデータがないなら作成する
       #(例)user1に対して、今月の初日から最終日の値を取得する
+      #https://udemy.benesse.co.jp/development/ruby-array.html 
       if !@user.attendances.any? {|attendance| attendance.day == date }
         linked_attendance = Attendance.create(user_id: @user.id, day: date)
         linked_attendance.save
@@ -42,7 +44,14 @@ class UsersController < ApplicationController
     end
     
     # 表示期間の勤怠データを日付順にソートして取得 show.html.erb、 <% @attendances.each do |attendance| %>からの情報
+    # モデル.where.not(条件) ※WHEREと一緒に使用し、条件式に一致しないものを取得する
+    # User.where.not("name = 'Jon'")
+    # SELECT * FROM users WHERE NOT (name = 'Jon')
+    
+    #https://qiita.com/Kta-M/items/8bd941d3f61a536e21ac
+    #day >= ? => day >= first_day,  day <= ? => day <= @last_day
     @attendances = @user.attendances.where('day >= ? and day <= ?', @first_day, @last_day).order("day ASC")
+   
     # 出勤日数
     @attendance_days = @attendances.where.not(attendance_time: nil, leaving_time: nil).count
     # 在社時間総数

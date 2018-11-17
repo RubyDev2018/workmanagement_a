@@ -22,7 +22,7 @@ User.create!(name:  "Example1",
              specified_work_end_time: "18:00",
              password:              "password",
              password_confirmation: "password",
-             admin: true,
+             admin: false,
              activated: true,
              activated_at: Time.zone.now)
 
@@ -36,7 +36,7 @@ User.create!(name:  "Example2",
              specified_work_end_time: "18:00",
              password:              "password",
              password_confirmation: "password",
-             admin: true,
+             admin: false,
              activated: true,
              activated_at: Time.zone.now)
 
