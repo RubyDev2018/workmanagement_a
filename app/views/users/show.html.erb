@@ -17,7 +17,7 @@
         指定勤務終了時間<%= format("%.2f", ((@user.specified_work_end_time.hour*60.0) + @user.specified_work_end_time.min)/60) if !@user.specified_work_end_time.blank? %>
       </th>
       <th colspan="3" class="table-header">基本時間 
-      <%= format("%.2f", ((@user.basic_work_time.hour*60.0) + @user.basic_work_time.min)/60) if !@user.basic_work_time.blank? %></th>
+      <%= format("%.02d", @user.basic_work_time.hour)%>:<%= format("%.02d",@user.basic_work_time.min) if !@user.basic_work_time.blank? %></th>
       </th>
       <th class="table-header">初日  <%= @first_day.strftime("%m/%d") %></th>
     </tr>
@@ -125,7 +125,7 @@
           <!-- 在社時間の表示  -->
           <td class="table-body">
             <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
-              <%= format("%.2f", (attendance.leaving_time - attendance.attendance_time)/3600) %>
+              <%= format("%.02d",attendance.leaving_time.hour - attendance.attendance_time.hour) %>:<%= format("%.02d",attendance.leaving_time.min - attendance.attendance_time.min)%>
             <% end %>
           </td>
 
@@ -177,7 +177,6 @@
 
           <!-- 指示者確認㊞  -->
           <td class="table-body">
-            
 
           </td>
           
@@ -190,14 +189,14 @@
         基本時間合計→
       </td>
       <td colspan="2" class="table-body"> 
-        <%= format("%.2f", @attendance_sum) %>
+        <%= format("%.02d",@attendance_sum_hour)%>:<%= format("%.02d",@attendance_sum_min) %>
       </td>
       <td colspan="3" class="table-body"></td>
       <td colspan="3" class="table-body">
         在社時間合計→
       </td>
       <td class="table-body">
-        <%= format("%.2f", @work_sum) %>
+        <%= format("%.02d",@work_sum_hour)%>:<%= format("%.02d",@work_sum_min) %>
       </td>
       <td colspan="5" class="table-body"></td>
       <td class="table-body">

@@ -55,23 +55,29 @@ class UsersController < ApplicationController
     # 出勤日数
     @attendance_days = @attendances.where.not(attendance_time: nil, leaving_time: nil).count
     # 在社時間総数
-    @work_sum = 0
+    @work_sum_hour= 0
+    @work_sum_min= 0
     @attendances.where.not(attendance_time: nil, leaving_time: nil).each do |attendance|
-      @work_sum += attendance.leaving_time - attendance.attendance_time
+    @work_sum_hour += (attendance.leaving_time.hour - attendance.attendance_time.hour)
+    @work_sum_min += (attendance.leaving_time.min - attendance.attendance_time.min)
+      if @work_sum_min >= 60
+        @work_sum_hour +=1
+        @work_sum_min   =0
+      end  
     end
-    @work_sum /= 3600
+    
     
     #基本時間・指定勤務時間・総合勤務時間初期値入力
-    @basic_work_info = 0
     @basic_specified_work_info = 0
-    @attendance_sum = 0
+    @attendance_sum_hour = 0
+    @attendance_sum_hour = 0
     
     #基本時間
-    @basic_work_info = ((@user.basic_work_time.hour*60.0) + @user.basic_work_time.min)/60 if !@user.basic_work_time.blank?
-      
+    @basic_work_info_hour = @user.basic_work_time.hour if !@user.basic_work_time.blank?
+    @basic_work_info_min  = @user.basic_work_time.min  if !@user.basic_work_time.blank?  
     #総合勤務時間　= 出勤日数*基本時間  
-    @attendance_sum = @attendance_days*@basic_work_info 
-
+    @attendance_sum_hour = @attendance_days*@basic_work_info_hour 
+    @attendance_sum_min = @attendance_days*@basic_work_info_min
     
 
     # 検索拡張機能として.search(params[:search])を追加    

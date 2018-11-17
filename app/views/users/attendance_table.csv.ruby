@@ -2,10 +2,13 @@ require 'csv'
 
 CSV.generate do |csv|
   # ユーザ情報のヘッダー
-  #csv << ["名前", @user.name, "所属", @user.affiliation, "社員番号", @user.card_id,
-  #        "出勤日数", "#{@attendance_days}日"]
+  csv_column_names = ["名前", @user.name, "所属", @user.affiliation, "社員番号", @user.card_id,
+                      "出勤日数", "#{@attendance_days}日"]
 
-  csv << ["#{@first_day.strftime("%Y年%m月")} 時間管理表"]
+  csv << csv_column_names
+  
+  csv << ["#{@first_day.strftime("%Y年%m月")}", "時間管理表 "]
+ 
   
   # 勤怠情報のヘッダー
   column_names = %w(日付 曜日 出社時間 退社時間 在社時間 備考 )

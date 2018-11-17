@@ -45,7 +45,7 @@
               <!-- 在社時間の表示  -->
               <td class="table-body">
                 <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
-                  <%= format("%.2f", (attendance.leaving_time - attendance.attendance_time)/3600) %>
+                   <%= format("%.02d",attendance.leaving_time.hour - attendance.attendance_time.hour) %>:<%= format("%.02d",attendance.leaving_time.min - attendance.attendance_time.min)%>
                 <% end %>
               </td>
               
