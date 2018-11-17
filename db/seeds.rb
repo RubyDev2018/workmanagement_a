@@ -1,12 +1,44 @@
-# User.create!(name:  "Example User",
-#             email: "example@railstutorial.org",
-#             password:              "foobar",
-#             password_confirmation: "foobar",
-#             affiliation: "管理者",
-#             admin: true,
-#             activated: true,
-#             activated_at: Time.zone.now)
+User.create!(name:  "Example",
+             email: "example@gmail.com",
+             affiliation: "管理者",
+             employee_number: 1111,
+             card_id: 1111,
+             basic_work_time: "08:00",
+             specified_work_start_time: "09:00",
+             specified_work_end_time: "18:00",
+             password:              "password",
+             password_confirmation: "password",
+             admin: true,
+             activated: true,
+             activated_at: Time.zone.now)
 
+User.create!(name:  "Example1",
+             email: "example2@gmail.com",
+             affiliation: "社員B",
+             employee_number: 2222,
+             card_id: 2222,
+             basic_work_time: "08:00",
+             specified_work_start_time: "09:00",
+             specified_work_end_time: "18:00",
+             password:              "password",
+             password_confirmation: "password",
+             admin: true,
+             activated: true,
+             activated_at: Time.zone.now)
+
+User.create!(name:  "Example2",
+             email: "example3@gmail.com",
+             affiliation: "社員C",
+             employee_number: 3333,
+             card_id: 3333,
+             basic_work_time: "08:00",
+             specified_work_start_time: "09:00",
+             specified_work_end_time: "18:00",
+             password:              "password",
+             password_confirmation: "password",
+             admin: true,
+             activated: true,
+             activated_at: Time.zone.now)
 
 # 99.times do |n|
 #   name     = Faker::Name.name
