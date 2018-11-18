@@ -101,8 +101,7 @@ class AttendanceController < ApplicationController
 
      attendance = Attendance.find(params[:attendance][:id]) 
     
-    attendance.applying!
-     
+     params[:attendance][:over_time_state] = 1
      attendance.update_attributes(attendance_params)
     
      

@@ -177,7 +177,7 @@
 
           <!-- 指示者確認㊞  -->
           <td class="table-body">
-            <% if attendance.applying? %>
+            <% if attendance.over_time_state = 1 %>
               残業申請中
             <% end %>  
           </td>
