@@ -177,7 +177,9 @@
 
           <!-- 指示者確認㊞  -->
           <td class="table-body">
-
+            <% if attendance.applying? %>
+              残業申請中
+            <% end %>  
           </td>
           
         </tr>
@@ -254,6 +256,12 @@
             <td class="table-body">
               <%= f.text_field :business_content, class: 'form_control' %>
             </td>
+          <!--指示者確認㊞の表示-->    
+            <td class="table-body">
+              
+            </td>  
+    
+    
       
         </tbody>
       </table>

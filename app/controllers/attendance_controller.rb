@@ -101,7 +101,10 @@ class AttendanceController < ApplicationController
 
      attendance = Attendance.find(params[:attendance][:id]) 
     
+    attendance.applying!
+     
      attendance.update_attributes(attendance_params)
+    
      
        # 終了予定時間があれば更新
         if !params[:attendance]["expected_end_time(4i)"].blank? || !params[:attendance]["expected_end_time(5i)"].blank?
@@ -120,6 +123,6 @@ class AttendanceController < ApplicationController
 
     private
       def attendance_params
-        params.require(:attendance).permit(:business_content)
+        params.require(:attendance).permit(:business_content, :over_time_state)
       end
 end

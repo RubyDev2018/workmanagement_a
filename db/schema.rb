@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181114134749) do
+ActiveRecord::Schema.define(version: 20181118131703) do
 
   create_table "attendances", force: :cascade do |t|
     t.datetime "attendance_time"
@@ -24,6 +24,8 @@ ActiveRecord::Schema.define(version: 20181114134749) do
     t.integer "user_id"
     t.datetime "expected_end_time"
     t.text "business_content"
+    t.integer "overtime_state"
+    t.integer "over_time_state", default: 0
   end
 
   create_table "basic_infos", force: :cascade do |t|
