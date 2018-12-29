@@ -98,10 +98,13 @@ class AttendanceController < ApplicationController
       return
     end
 
-
      attendance = Attendance.find(params[:attendance][:id]) 
-    
+
+
+     #条件追記
      params[:attendance][:over_time_state] = 1
+
+
      attendance.update_attributes(attendance_params)
     
      

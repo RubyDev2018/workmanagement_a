@@ -57,6 +57,8 @@ Rails.application.routes.draw do
   # 残業申請関係
   post '/attendance/oneday_overtime', to: 'attendance#oneday_overtime', as: 'oneday_overtime'
   
+  # 出勤中社員一覧
+  get '/attendance_employees', to: 'users#attendance_index', as: 'attendance_index'
   
 end
 

@@ -27,3 +27,4 @@ production:
   password: <%= ENV['PASSWORD'] %>
   host:     <%= ENV['IP'] %>
   database: workattendance
+  

@@ -258,7 +258,10 @@
             </td>
           <!--指示者確認㊞の表示-->    
             <td class="table-body">
-              
+               <%#= f.collection_select :user_id, 
+                  @users, :id, :name,
+                  {:include_blank => true, :selected => 0}, 
+                  {:class => "form-control"} %>
             </td>  
     
     

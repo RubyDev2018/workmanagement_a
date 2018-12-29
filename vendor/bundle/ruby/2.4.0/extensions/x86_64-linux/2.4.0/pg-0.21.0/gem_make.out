@@ -1,5 +1,5 @@
 current directory: /home/ec2-user/environment/work_management/vendor/bundle/ruby/2.4.0/gems/pg-0.21.0/ext
-/usr/local/rvm/rubies/ruby-2.4.1/bin/ruby -r ./siteconf20181103-5321-5gsklj.rb extconf.rb
+/usr/local/rvm/rubies/ruby-2.4.1/bin/ruby -r ./siteconf20181125-10282-1scoq6k.rb extconf.rb
 checking for pg_config... yes
 Using config values from /usr/bin/pg_config
 checking for libpq-fe.h... no

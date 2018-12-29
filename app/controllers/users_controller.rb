@@ -9,6 +9,15 @@ class UsersController < ApplicationController
    @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
   end
   
+  def attendance_index
+    @attendance_users = {}
+    User.all.each do |attendance_user|
+      if attendance_user.attendances.any?{|a|
+       ( a.day == Date.today && !a.attendance_time.blank? && a.leaving_time.blank? ) }
+      @attendance_users[attendance_user.employee_number] = attendance_user.name
+      end
+    end  
+  end
   
   # Get /users/:id
   def show
@@ -234,7 +243,7 @@ class UsersController < ApplicationController
     def basic_info_params
       params.require(:basic_info).permit(:basic_work_time, :specified_work_time)
     end
-    
+  
     # ログイン済みユーザーかどうか確認
       def work_management_user
         unless logged_in?
