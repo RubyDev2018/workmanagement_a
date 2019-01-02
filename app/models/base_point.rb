@@ -1,0 +1,2 @@
+class BasePoint < ApplicationRecord
+end

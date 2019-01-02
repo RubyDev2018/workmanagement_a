@@ -1,0 +1,2 @@
+class BasePointsController < ApplicationController
+end

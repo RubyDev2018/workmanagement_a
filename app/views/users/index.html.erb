@@ -1,7 +1,13 @@
 <% provide(:title, 'All users') %>
-<h1>全てのユーザー</h1>
+<h1>ユーザ一覧</h1>
 
 <%= will_paginate @customers, { :previous_label => '&lt 前へ', :next_label => '次へ &gt' } %>
+
+<!--参考URL:https://qiita.com/m-shin/items/7e8cdea2644e47b87fbf-->
+<%= form_tag import_users_path, :style=>"color:white;", class: 'form-btn',  multipart: true do %>
+  <%= file_field_tag :file %>
+  <%= submit_tag "CSVをインポート", :style=>"color:white;", class: "btn btn-sm btn-primary" %>
+<% end %>
 
 <!--  検索拡張機能  -->
 <p>名前検索</p>
@@ -13,6 +19,5 @@
 <ul class="users">
   <%= render @users %>
 </ul>
-
 
 <%= will_paginate @customers, { :previous_label => '&lt 前へ', :next_label => '次へ &gt' } %>

@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
-  
-  get 'password_resets/new'
-
-  get 'password_resets/edit'
-
-  get 'sessions/new'
   root 'static_pages#home'
+  get  '/signup',  to: 'users#new'
+  post '/signup',  to: 'users#create'
+  get    '/login',   to: 'sessions#new'
+  post   '/login',   to: 'sessions#create'
+  delete '/logout',  to: 'sessions#destroy'
+
   get  '/help',    to: 'static_pages#help'
   get  '/about',   to: 'static_pages#about'
   get  '/contact', to: 'static_pages#contact'
@@ -27,14 +27,8 @@ Rails.application.routes.draw do
   get '/basic_info',   to: 'users#edit_basic_info'
   patch '/basic_info',   to: 'users#update_basic_info'
   
-  get  '/signup',  to: 'users#new'
-  post '/signup',  to: 'users#create'
-  get    '/login',   to: 'sessions#new'
-  post   '/login',   to: 'sessions#create'
-  delete '/logout',  to: 'sessions#destroy'
-
-  
   resources :users do
+    collection { post :import }
     member do
       #  /users/:id...
       get :following, :followers
@@ -49,7 +43,11 @@ Rails.application.routes.draw do
   resources :password_resets, only: [:new, :create, :edit, :update]
   resources :microposts,      only: [:create, :destroy] 
   resources :relationships,   only: [:create, :destroy]
-  resource  :attendances
+  #resource  :attendances
+  
+  # 拠点情報
+  resources :base_points
+  post '/base_point/create',  to: 'base_points#create', as: 'base_point_create'
   
   # CSV
   get '/attendance_table', to: 'users#attendance_table', as: 'attendance_table'
@@ -59,6 +57,7 @@ Rails.application.routes.draw do
   
   # 出勤中社員一覧
   get '/attendance_employees', to: 'users#attendance_index', as: 'attendance_index'
+  
   
 end
 

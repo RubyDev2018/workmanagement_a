@@ -1,2 +1,3 @@
 class BasicInfo < ApplicationRecord
+  
 end

@@ -1,12 +1,10 @@
 class UsersController < ApplicationController
-  before_action :work_management_user, only: [:index, :edit, 
-                                       :update, :destroy,
-                                       :following, :followers]
-  before_action :correct_user,   only: [:edit, :update]
-  before_action :admin_user,     only: [:destroy]
+  before_action :work_management_user, only: [:index, :edit, :update, :destroy]
+  before_action :admin_or_correct_user, only: [:edit, :update]
+  before_action :admin_user,   only: [:index, :destroy]
   
   def index
-   @users = User.where(activated: true).paginate(page: params[:page]).search(params[:search])
+   @users = User.paginate(page: params[:page]).search(params[:search])
   end
   
   def attendance_index
@@ -164,15 +162,18 @@ class UsersController < ApplicationController
   
   # PATCH /users/:id
   def update
-    @user = User.find(params[:id])
     if @user.update_attributes(user_params) 
       #Success
       flash[:success] = "ユーザー情報を更新しました"
-      redirect_to current_user
+      if current_user.admin?
+        redirect_to users_path
+      else
+        redirect_to @user
+      end  
     else
       #Failure
       # => @user.errors.full_messages
-      redirect_to current_user
+      redirect_to 'edit'
     end
   end
   
@@ -232,6 +233,19 @@ class UsersController < ApplicationController
     render 'show_follow'
   end
   
+  def import
+    # ファイルセットされていたら保存と結果のメッセージを取得して表示
+    if !params[:file].blank?
+      # 保存と結果のメッセージを取得して表示
+      User.import(params[:file])
+      flash[:success] = "CSVファイルを読み込みました"
+    else
+      flash[:notice] = "読み込むCSVファイルをセットしてください"
+    end
+    redirect_to users_path
+  end
+
+  
   private
     def user_params
       params.require(:user).permit(
@@ -268,5 +282,13 @@ class UsersController < ApplicationController
     def admin_user
       redirect_to(root_url) unless current_user.admin?
     end
+  # 正しいユーザーor管理者かどうか確認
+    def admin_or_correct_user
+      @user = User.find(params[:id])
+      if !current_user?(@user) && !current_user.admin?
+        redirect_to(root_url)
+      end
+    end
+  
   
 end

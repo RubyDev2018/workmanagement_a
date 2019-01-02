@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181118131703) do
+ActiveRecord::Schema.define(version: 20190101190551) do
 
   create_table "attendances", force: :cascade do |t|
     t.datetime "attendance_time"
@@ -24,8 +24,12 @@ ActiveRecord::Schema.define(version: 20181118131703) do
     t.integer "user_id"
     t.datetime "expected_end_time"
     t.text "business_content"
-    t.integer "overtime_state"
     t.integer "over_time_state", default: 0
+  end
+
+  create_table "base_points", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "basic_infos", force: :cascade do |t|
@@ -82,6 +86,7 @@ ActiveRecord::Schema.define(version: 20181118131703) do
     t.time "specified_work_end_time"
     t.integer "employee_number"
     t.datetime "expected_end_time"
+    t.boolean "superior", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

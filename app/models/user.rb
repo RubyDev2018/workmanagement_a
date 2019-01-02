@@ -63,6 +63,25 @@ class User < ApplicationRecord
   def forget
     update_attribute(:remember_digest, nil)
   end
+
+  #importファイル作成
+  def self.import(file)
+    CSV.foreach(file.path, headers: true) do |row|
+      # IDが見つかれば、レコードを呼び出し、見つかれなければ、新しく作成
+      product = find_by(id: row["id"]) || new
+      # CSVからデータを取得し、設定する
+      product.attributes = row.to_hash.slice(*updatable_attributes)
+      
+      # 保存する
+      product.save
+    end
+  end
+
+  # 更新を許可するカラムを定義
+  def self.updatable_attributes
+    ["id", "name", "email", "affiliation", "employee_number", "card_id", "basic_work_time", "specified_work_start_time", "specified_work_end_time", "password", "password_confirmation"]
+  end
+
   
   # アカウントを有効にする
   def activate
@@ -125,7 +144,6 @@ class User < ApplicationRecord
   end
 
   private
-  
     def downcase_email
       self.email = self.email.downcase 
     end
@@ -136,5 +154,4 @@ class User < ApplicationRecord
       self.activation_digest = User.digest(self.activation_token)
       #@user.activation_digest => ハッシュ値
     end
-  
 end

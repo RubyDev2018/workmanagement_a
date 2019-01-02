@@ -1,8 +1,65 @@
 <li>
-  <%= gravatar_for user, size: 50 %>
+  <%#= gravatar_for user, size: 50%>
   <%= link_to user.name, user %>
+  
   <% if current_user.admin? && !current_user?(user) %>
-    | <%= link_to "ユーザー削除", user, method: :delete,
-                                  data: { confirm: "本当に削除して良いですか？" } %>
+    | <%= link_to "削除", user, method: :delete,
+                                  data: { confirm: "本当に削除して良いですか？" }, 
+                                  :style=>"color:white;", class: "btn btn-default btn-primary"%>
+      
+      
+  <!--http://bootstrap3.cyberlab.info/javascript/collapse-button.html-->                                
+	<p>
+		<div class="panel-group" id="sampleAccordion">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a button type="button" style="color:white" class="btn btn-default  btn-primary"  data-toggle="collapse" data-parent="#sampleAccordion" href="#sampleAccordionCollapse<%= user.id %>">
+							<h5>編集</h5>
+						</a>
+					</h3>
+				</div>
+	</p>
+				<div id="sampleAccordionCollapse<%= user.id %>" class="panel-collapse collapse">
+					<div class="panel-body">
+            <%= form_for(user) do |f| %>
+				      <%= f.label :名前 %>
+				      <%= f.text_field :name, class: 'form-control' %>
+				
+				      <%= f.label :メールアドレス %>
+				      <%= f.email_field :email, class: 'form-control' %>
+				
+				      <%= f.label :所属 %>
+				      <%= f.text_field :affiliation, class: 'form-control' %>
+				
+				      <%= f.label :employee_number, "社員番号"%>
+				      <%= f.number_field :employee_number, class: 'form-control' %>
+				
+				      <%= f.label :card_id,"カードID" %>
+				      <%= f.text_field :card_id, class: 'form-control' %>
+				
+				      <%= f.label :basic_work_time, "基本勤務時間"%>
+				      <%= f.time_field :basic_work_time, class: 'form-control' %>
+				
+				      <%= f.label :specified_work_start_time, "指定勤務開始時間"%>
+				      <%= f.time_field :specified_work_start_time, class: 'form-control' %>
+				
+				      <%= f.label :specified_work_end_time, "指定勤務終了時間"%>
+				      <%= f.time_field :specified_work_end_time, class: 'form-control' %>
+				
+				      <%= f.label :パスワード %>
+				      <%= f.password_field :password, class: 'form-control' %>
+				
+				      <%= f.label :password_confirmation, "パスワード確認" %>
+				      <%= f.password_field :password_confirmation, class: 'form-control' %>
+				      <%= @user %>
+              
+              <%= submit_tag '編集する' , class: "btn btn-primary"  %>
+       
+				    <% end %>
+					</div>
+				</div>
+			</div>
+		</div>  
   <% end %>
 </li>
