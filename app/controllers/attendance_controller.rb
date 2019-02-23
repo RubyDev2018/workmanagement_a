@@ -90,24 +90,32 @@ class AttendanceController < ApplicationController
 
   def oneday_overtime
     @user = User.find(params[:attendance][:user_id])
-
     # 終了予定時刻がNULLなら更新しない
     if params[:attendance]["expected_end_time(4i)"].blank? || params[:attendance]["expected_end_time(5i)"].blank?
       flash[:danger] = "残業申請時間を記入してください"
       redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
       return
     end
+     
+     
+    # 申請先が空なら何もしない
+    if params[:attendance][:authorizer_user_id].blank?
+      flash[:danger] = "残業申請の申請先が空です"
+      redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
+      return
+    end
 
-     attendance = Attendance.find(params[:attendance][:id]) 
-
-
+    attendance = Attendance.find(params[:attendance][:id]) 
+    attendance.applying!
      #条件追記
      params[:attendance][:over_time_state] = 1
-
-
-     attendance.update_attributes(attendance_params)
+    attendance.authorizer_user_id = params[:attendance][:authorizer_user_id] 
+      @superior_users1 = User.find_by(id: attendance.authorizer_user_id).name
     
+     attendance.update_attributes(attendance_params)
      
+
+
        # 終了予定時間があれば更新
         if !params[:attendance]["expected_end_time(4i)"].blank? || !params[:attendance]["expected_end_time(5i)"].blank?
           attendance.update_column(:expected_end_time, 
@@ -125,6 +133,6 @@ class AttendanceController < ApplicationController
 
     private
       def attendance_params
-        params.require(:attendance).permit(:business_content, :over_time_state)
+        params.require(:attendance).permit(:business_content, :over_time_state, :authorizer_user_id)
       end
 end

@@ -1,3 +1,88 @@
 <% provide(:title, "拠点情報") %>
 
 <h1>拠点一覧</h1>
+
+<table class="table table-bordered table-striped table-condensed">
+  <thead>
+    <thead>
+      <tr>
+        <th class="table-header"></th>
+        <th class="table-header"></th>
+        <th class="table-header">拠点番号</th>
+        <th class="table-header">拠点名</th>
+        <th class="table-header">勤怠種類</th>
+      </tr>
+    </thead>
+  </thead>
+  <tbody>
+    <% @base_points.each do |base_point| %> 
+      <tr>
+        <td class="table-header"> 
+          <a style="color:white; " class= "btn button-large-size btn-primary" data-toggle="modal" data-target="#modal<%=base_point.id %>">
+            修正
+          </a>
+        </td>
+        <td class="table-header"> 
+          <%= link_to "削除", base_point, method: :delete,
+                                  data: { confirm: "本当に削除して良いですか？" }, 
+                                  :style=>"color:white;", class: "btn btn-default btn-primary"%>
+        </td>
+        <td class="table-header">
+          <%= base_point.id %>
+        </td>
+        <td class="table-header">
+          <%= base_point.name %>
+        </td>
+        <td class="table-header">
+          <%= base_point.attendance_state0 %>
+        </td>
+      </tr>
+      <!--修正モーダル表示-->
+    	  <div class="modal fade" id="modal<%=base_point.id %>" class="white-popup mfp-with-anim mfp-hide">
+           <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+               <div class="modal-header" align="center">
+                 <h3>【拠点情報】</h3>
+               </div>
+               <div class="modal-body">
+                <%= form_for(base_point) do |f| %>
+                <%= f.label :name, "拠点名"%>
+                <%= f.text_field :name, class: 'form-control' %>
+                <%= f.label :attendance_state, "勤怠種類"%>
+                <%= f.text_field :attendance_state0, class: 'form-control'%>
+                <%= submit_tag '修正完了' , class: "btn btn-primary"%>
+              <% end %>
+               </div>
+        	   </div>
+           </div>  
+    	  </div>
+    <% end %>  
+  </tbody>
+
+</table>  
+　<!--アコーディオン実装-->      
+  <!--http://bootstrap3.cyberlab.info/javascript/collapse-button.html-->                                
+	<p>
+		<div class="panel-group" id="sampleAccordion">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a button type="button" style="color:white" class="btn btn-default  btn-primary"  data-toggle="collapse" data-parent="#sampleAccordion" href="#sampleAccordionCollapse">
+							<h5>拠点情報の追加</h5>
+						</a>
+					</h3>
+			　</div>
+	</p>
+				<div id="sampleAccordionCollapse" class="panel-collapse collapse">
+      	  <div class="panel-body">
+      	    <%= form_for(@base_point, url: base_point_create_path) do |f| %>
+              <%= f.label :name, "拠点名"%>
+              <%= f.text_field :name, class: 'form-control' %>
+              <%= f.label :attendance_state0, "勤怠種類"%>
+              <%= f.text_field :attendance_state0, class: 'form-control'%>
+              <%= submit_tag '追加' , class: "btn btn-primary"  %>
+            <% end %>
+      		</div>
+			</div>
+		</div>  
+ 

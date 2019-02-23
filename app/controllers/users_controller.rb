@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   before_action :work_management_user, only: [:index, :edit, :update, :destroy]
-  before_action :admin_or_correct_user, only: [:edit, :update]
+  before_action :admin_or_correct_user, only: [:index, :edit, :update]
   before_action :admin_user,   only: [:index, :destroy]
+  
   
   def index
    @users = User.paginate(page: params[:page]).search(params[:search])
@@ -21,6 +22,8 @@ class UsersController < ApplicationController
   def show
     #=> app/views/users/show.html
     @user = User.find(params[:id])
+    @superior_users = User.all
+    
     
     # 曜日表示用に使用する
     @youbi = %w[日 月 火 水 木 金 土]
@@ -36,7 +39,7 @@ class UsersController < ApplicationController
       # 表示月が無ければ、今月分を表示
       @first_day = Date.new(Date.today.year, Date.today.month, 1)
     end
-    #最終日を取得する
+    #最��日を取得する
     @last_day = @first_day.end_of_month
 
     # 今月の初日から最終日の期間分を取得
@@ -73,7 +76,6 @@ class UsersController < ApplicationController
       end  
     end
     
-    
     #基本時間・指定勤務時間・総合勤務時間初期値入力
     @basic_specified_work_info = 0
     @attendance_sum_hour = 0
@@ -97,12 +99,12 @@ class UsersController < ApplicationController
    # => form_for @user
   end
   
-  #SCVファイル出力
+  #CSVファイル出力
   def attendance_table
     #=> app/views/users/show.html
     @user = User.find(params[:id])
     
-    # 曜日表示用に使用する
+    # 曜日表示に使用する
     @youbi = %w[日 月 火 水 木 金 土]
     
     #基本情報
@@ -112,7 +114,7 @@ class UsersController < ApplicationController
     if !params[:first_day].nil?
       @first_day = Date.parse(params[:first_day])
     else
-      # 表示月が無ければ、今月分を表示
+      # 今月分を表示
       @first_day = Date.new(Date.today.year, Date.today.month, 1)
     end
     #最終日を取得する
@@ -152,6 +154,7 @@ class UsersController < ApplicationController
       render 'new'
     end
   end  
+  
   
   #GET /users/:id/edit
   #params[:id] => :id
@@ -282,13 +285,12 @@ class UsersController < ApplicationController
     def admin_user
       redirect_to(root_url) unless current_user.admin?
     end
-  # 正しいユーザーor管理者かどうか確認
+  # 正しいユーザーor管理者か��うか確認
     def admin_or_correct_user
       @user = User.find(params[:id])
       if !current_user?(@user) && !current_user.admin?
         redirect_to(root_url)
       end
     end
-  
-  
+
 end

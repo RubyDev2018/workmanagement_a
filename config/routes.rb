@@ -48,7 +48,7 @@ Rails.application.routes.draw do
   # 拠点情報
   resources :base_points
   post '/base_point/create',  to: 'base_points#create', as: 'base_point_create'
-  
+
   # CSV
   get '/attendance_table', to: 'users#attendance_table', as: 'attendance_table'
   

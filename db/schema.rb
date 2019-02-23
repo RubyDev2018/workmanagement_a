@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190101190551) do
+ActiveRecord::Schema.define(version: 20190212155312) do
 
   create_table "attendances", force: :cascade do |t|
     t.datetime "attendance_time"
@@ -25,11 +25,15 @@ ActiveRecord::Schema.define(version: 20190101190551) do
     t.datetime "expected_end_time"
     t.text "business_content"
     t.integer "over_time_state", default: 0
+    t.integer "authorizer_user_id"
   end
 
   create_table "base_points", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.integer "attendance_state", default: 0
+    t.string "attendance_state0"
   end
 
   create_table "basic_infos", force: :cascade do |t|

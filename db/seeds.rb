@@ -12,9 +12,9 @@ User.create!(name:  "Example",
              activated: true,
              activated_at: Time.zone.now)
 
-User.create!(name:  "Example1",
-             email: "example2@gmail.com",
-             affiliation: "社員B",
+User.create!(name:  "Superior",
+             email: "superior@gmail.com",
+             affiliation: "上長",
              employee_number: 2222,
              card_id: 2222,
              basic_work_time: "08:00",
@@ -38,29 +38,29 @@ User.create!(name:  "Example2",
              activated: true,
              activated_at: Time.zone.now)
 
-#99.times do |n|
-#   name     = Faker::Name.name
-#   email    = "example-#{n+1}@railstutorial.org"
-#   affiliation = "営業部#{n+1}"
-#   employee_number= "#{n+1}"
-#   card_id        = "#{n+1}"
-#   basic_work_time= "08:00"
-#   specified_work_start_time= "09:00"
-#   specified_work_end_time= "18:00"
-#   password= "password"
-#   User.create!(name:  name,
-#               email: email,
-#               affiliation: affiliation,
-#               employee_number: employee_number,
-#               card_id: card_id,
-#               basic_work_time: basic_work_time,
-#               specified_work_start_time: specified_work_start_time,
-#               specified_work_end_time: specified_work_end_time,
-#               password:              password,
-#               password_confirmation: password,
-#               activated: true,
-#               activated_at: Time.zone.now)
-#end
+99.times do |n|
+   name     = Faker::Name.name
+   email    = "example-#{n+1}@railstutorial.org"
+   affiliation = "営業部#{n+1}"
+   employee_number= "#{n+1}"
+   card_id        = "#{n+1}"
+   basic_work_time= "08:00"
+   specified_work_start_time= "09:00"
+   specified_work_end_time= "18:00"
+   password= "password"
+   User.create!(name:  name,
+               email: email,
+               affiliation: affiliation,
+               employee_number: employee_number,
+               card_id: card_id,
+               basic_work_time: basic_work_time,
+               specified_work_start_time: specified_work_start_time,
+               specified_work_end_time: specified_work_end_time,
+               password:              password,
+               password_confirmation: password,
+               activated: true,
+               activated_at: Time.zone.now)
+end
 
 # # マイクロポスト
 # users = User.order(:created_at).take(6)

@@ -38,6 +38,8 @@
 <%= link_to "勤怠を編集", attendance_edit_url(@attendance, params: { id: @user.id, first_day: @first_day }), 
                           :style=>"color:white;", class: "btn btn-sm btn-primary"   %>
 <%= link_to "CSV", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
+                          :style=>"color:white;", class: "btn btn-sm btn-primary", id: "csv" if current_user == @user%>
+<%= link_to "勤怠修正ログ(承認済)", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
                           :style=>"color:white;", class: "btn btn-sm btn-primary" if current_user == @user%>
 
 <table class="table table-bordered table-striped table-condensed">
@@ -83,11 +85,10 @@
           <td class="table-body">
             <div class="inline-applicatioins">
               <%  if current_user == @user %>
-                <a style="color:white; " class= "btn btn-sm btn-primary" data-toggle="modal" data-target="#sampleModal<%= attendance.id %>">残業申請</a>
+                <a style="color:white; " class= "btn btn-sm btn-primary" data-toggle="modal" data-target="#<%= attendance.id %>">残業申請</a>
               <% end %>
             </div>
           </td>
-        
      　　　  <!--日付-->
           <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
           <!--曜日-->
@@ -202,7 +203,7 @@
       </td>
       <td colspan="5" class="table-body"></td>
       <td class="table-body">
-        申請
+        <%= User.find_by(id: 2).name %>へ申請中
       </td>
     </tr>
   </tbody>
@@ -213,9 +214,9 @@
 <!--残業申請-->
 <!--モーダルダイアログ-->
 <% @attendances.each do |attendance| %>
- <div class="modal fade" id="sampleModal<%= attendance.id %>" class="white-popup mfp-with-anim mfp-hide">
+ <div class="modal fade" id="<%= attendance.id %>" class="white-popup mfp-with-anim mfp-hide">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content"> 
+    <div class="modal-content">
      <div class="modal-header" align="center">
       <h3>【残業申請】</h3>
      </div>
@@ -224,7 +225,6 @@
       <%= f.hidden_field :user_id, :value => "#{@user.id}"%>
       <%= f.hidden_field :id, :value => "#{attendance.id}"%>
       <%= f.hidden_field :first_day, :value => @first_day %>
-      
       <table class="table table-bordered table-striped table-condensed">
         <thead>
           <tr>
@@ -256,16 +256,18 @@
             <td class="table-body">
               <%= f.text_field :business_content, class: 'form_control' %>
             </td>
-          <!--指示者確認㊞の表示-->    
+          <!--指示者確認㊞の表示-->  
             <td class="table-body">
-               <%#= f.collection_select :user_id, 
-                  @users, :id, :name,
+               <% if attendance.applying? %>
+                 
+                 <%= @superior_users1 %>へ申請中
+               <% end %>   
+              
+               <%= f.collection_select :authorizer_user_id, 
+                  @superior_users, :id, :name,
                   {:include_blank => true, :selected => 0}, 
-                  {:class => "form-control"} %>
-            </td>  
-    
-    
-      
+                  {:class => "form-control authorizer_user_id"} %>
+            </td>
         </tbody>
       </table>
       	</div>
@@ -274,7 +276,6 @@
       <%= f.submit "変更を送信する", style:"width:130px", class: "btn btn-primary" %>
 			</div>
    <% end %>    
-      	
       </div>
       </div>
     </div>
@@ -282,40 +283,12 @@
 <% end %>
 
 <script>
-  // モーダル表示用JQuery
-  $('.inline-applicatioins').magnificPopup({
-    delegate: 'a',
-    removalDelay: 500,
-    callbacks: {
-      beforeOpen: function() {
-         this.st.mainClass = this.st.el.attr('data-effect');
-      },
-    },
-  });
-  
-  // 残業申請の空チェック
-  $(function() {
-    $('form').submit(function() {
-      // 申請日に時間空白あれば未記入の警告を表示する
-      // const $trs = $('tbody').find('tr').toArray();
-      // var isOverTimeBlank = $trs.some(function( tr ) {
-      //   var edited_work_start = $(tr).find('.edited_work_start').val();
-      //   var edited_work_end = $(tr).find('.edited_work_end').val();
-      //   var authorizer_user_id_of_attendance = $(tr).find('.authorizer_user_id_of_attendance').val();
-      //   return ((edited_work_start === '' || edited_work_end === '') && authorizer_user_id_of_attendance !== '')
-      // });
-      // if (isOverTimeBlank) {
-      //   alert("終了予定時間が空です");
-      //   return false;
-      // }
+    $('#csv').click(function(){
+       if(!confirm('csvを出力しますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
     });
-  
-    // 所属長承認申請の空チェック
-    // $('.one-month-attendance-form').submit(function() {
-    //   if ($('.one-month-attendance').val() === "") {
-    //     alert("所属長承認申請の申請者が空です");
-    //     return false;
-    //   }
-    // });
-  });
 </script>
