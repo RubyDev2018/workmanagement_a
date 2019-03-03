@@ -47,7 +47,7 @@
 <% if current_user == @user %>
 <%= link_to "勤怠を編集", attendance_edit_url(@attendance, params: { id: @user.id, first_day: @first_day }), 
                           :style=>"color:white;", class: "btn btn-sm btn-primary" %>
-<%= link_to "CSV", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
+<%= link_to "CSV出力", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
                           :style=>"color:white;", class: "btn btn-sm btn-primary", id: "csv"  %>
 <%= render "work_log" %>                          
 <% end %>

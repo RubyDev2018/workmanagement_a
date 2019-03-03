@@ -43,7 +43,7 @@
             </table>
           <% end %>
         <button type="button" class="btn-lg" data-dismiss="modal" >閉じる</button>
-        <%= submit_tag "変更を送信する", style:"width:170px", class: "btn btn-lg btn-primary" %>
+        <%= submit_tag "変更を送信する", style:"width:170px", class: "btn btn-lg btn-primary month" %>
       <% end %>
       </div>
     </div>
@@ -51,7 +51,7 @@
 </div>
 
 <script>
-    $('.btn').click(function(){
+    $('.month').click(function(){
        if(!confirm('勤怠変更を送信しますか？')){
               /* キャンセルの時の処理 */
               return false;

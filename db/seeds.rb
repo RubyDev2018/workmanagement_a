@@ -51,19 +51,6 @@ User.create!(name:  "Example4",
              activated: true,
              activated_at: Time.zone.now)
 
-User.create!(name:  "Example5",
-             email: "example5@gmail.com",
-             affiliation: "社員5",
-             employee_number: 5555,
-             card_id: 5555,
-             basic_work_time: "08:00",
-             specified_work_start_time: "09:00",
-             specified_work_end_time: "18:00",
-             password:              "password",
-             password_confirmation: "password",
-             activated: true,
-             activated_at: Time.zone.now)
-
 # 99.times do |n|
 #   name     = Faker::Name.name
 #   email    = "example-#{n+1}@railstutorial.org"
