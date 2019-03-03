@@ -1,5 +1,4 @@
 <!--残業のお知らせモダール表示-->
-
 <div class="modal fade" id="modal-overwork" class="white-popup mfp-with-anim mfp-hide">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -87,11 +86,21 @@
           </tbody>
         </table>
       <% end %>
-      <div align="center"><%= submit_tag "変更を送信する", style:"width:200px", class: "btn btn-lg btn-primary" %></div>
+      <button type="button" class="btn-lg" data-dismiss="modal" >閉じる</button>
+      <%= submit_tag "変更を送信する", style:"width:170px", class: "btn btn-lg btn-primary"%>
     <% end %>
-        
-        
       </div>
     </div>
   </div>
 </div>  
+
+<script>
+    $('.btn').click(function(){
+       if(!confirm('変更を送信しますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
+    });
+</script>

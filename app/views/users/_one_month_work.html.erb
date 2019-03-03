@@ -1,4 +1,4 @@
-<% if @user.name %>
+<% if @user.superior %>
   <% if @one_month_work_check.count > 0 %>
     <div class="inline-applicatioins">
       <a id="overtime" data-toggle="modal" data-target="#modal-one_month_work">
@@ -12,5 +12,4 @@
       <%= "【所属長承認申請のお知らせはありません】" %>
     </div>
 <% end %>
-
 <% end %>
