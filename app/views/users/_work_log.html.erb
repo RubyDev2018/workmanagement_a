@@ -1,0 +1,107 @@
+<div class="inline-applicatioins">
+  <a data-toggle="modal"  style="color:white;"  class="btn btn-sm btn-primary" data-target="#work-log">
+   勤怠修正ログ（承認済）
+  </a>
+</div>
+
+<div class="modal fade" id="work-log" class="white-popup mfp-with-anim mfp-hide">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" align="center">
+    <h4 align="center">勤怠ログ</h4>
+    <table class="txt1 table table-bordered table-striped table-condensed table-status">
+      <thead>
+        <tr>
+          <th rowspan="3" class="table-header">日付</th>
+          <th rowspan="3" class="table-header">曜日</th>
+          <th colspan="4" class="table-header">変更前</th>
+          <th colspan="4" class="table-header">変更後</th>
+          <th rowspan="3" class="table-header">指示者</th>
+          <th rowspan="3" class="table-header">承認日</th>
+        </tr>
+        <tr>
+          <th colspan="2" class="table-header">出社</th>
+          <th colspan="2" class="table-header">退社</th>
+          <th colspan="2" class="table-header">出社</th>
+          <th colspan="2" class="table-header">退社</th>
+        </tr>
+        <tr>
+          <th class="table-header">時</th>
+          <th class="table-header">分</th>
+          <th class="table-header">時</th>
+          <th class="table-header">分</th>
+          <th class="table-header">時</th>
+          <th class="table-header">分</th>
+          <th class="table-header">時</th>
+          <th class="table-header">分</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @edit_log_applications.each do |name, attendances| %>
+          <% attendances.each do |attendance| %>
+          <tr>
+            <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
+            <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
+            <!-- 変更前の表示 -->
+            <!-- 出社 -->
+            <!-- 時 -->
+            <td class="table-body">
+              <%= attendance.attendance_time_bef_edit.hour if !attendance.attendance_time_bef_edit.blank? %>
+            </td>
+            <!-- 分 -->
+            <td class="table-body">
+              <%= attendance.attendance_time_bef_edit.min if !attendance.attendance_time_bef_edit.blank? %>
+            </td>
+
+            <!-- 退社 -->
+            <!-- 時 -->
+            <td class="table-body">
+              <%= attendance.leaving_time_bef_edit.hour if !attendance.leaving_time_bef_edit.blank? %>
+            </td>
+            <!-- 分 -->
+            <td class="table-body">
+              <%= attendance.leaving_time_bef_edit.min if !attendance.leaving_time_bef_edit.blank? %>
+            </td>
+
+            <!-- 変更後の表示 -->
+            <!-- 出社 -->
+            <!-- 時 -->
+            <td class="table-body">
+              <%= attendance.attendance_time_edit.hour if !attendance.attendance_time_edit.blank? %>
+            </td>
+            <!-- 分 -->
+            <td class="table-body">
+              <%= attendance.attendance_time_edit.min if !attendance.attendance_time_edit.blank? %>
+            </td>
+
+            <!-- 退社 -->
+            <!-- 時 -->
+            <td class="table-body">
+              <%= attendance.leaving_time_edit.hour if !attendance.leaving_time_edit.blank? %>
+            </td>
+            <!-- 分 -->
+            <td class="table-body">
+              <%= attendance.leaving_time_edit.min if !attendance.leaving_time_edit.blank? %>
+            </td>
+
+            <!-- 指示者  -->
+            <td class="table-body">
+             <%= User.find_by(id: attendance.authorizer_user_id).name %>から承認
+            </td>
+            
+            <!-- 承認日  -->
+            <td class="table-body">
+             <%= attendance.updated_at.strftime("%F") %>
+            </td>
+            
+          </tr>
+          <% end %>
+          
+        <% end %>
+      </tbody>
+    </table>
+ 
+</div>
+</div>
+</div>
+</div>

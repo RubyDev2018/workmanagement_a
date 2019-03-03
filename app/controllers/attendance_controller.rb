@@ -129,6 +129,10 @@ class AttendanceController < ApplicationController
         attendance.update_attributes(item.permit(:over_time_edit_state))
         
         if attendance.approval1?
+          # 現在の出勤/退勤時刻を変更前として保持 @note 変更前が空（この日付では初回の変更）なら保存
+          attendance.update_attributes(attendance_time_bef_edit: attendance.attendance_time) if attendance.attendance_time_bef_edit.blank?
+          attendance.update_attributes(leaving_time_bef_edit: attendance.leaving_time) if attendance.leaving_time_bef_edit.blank?
+          attendance.update_attributes(updated_at: Time.current)
           # 承認された場合は出勤/退勤時刻を上書きする
           attendance.update_attributes(attendance_time: attendance.attendance_time_edit, leaving_time: attendance.leaving_time_edit)
         end

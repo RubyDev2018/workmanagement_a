@@ -1,8 +1,7 @@
 class UsersController < ApplicationController
   before_action :work_management_user, only: [:index, :edit, :update, :destroy]
-  before_action :admin_or_correct_user, only: [:index, :edit, :update]
+  before_action :admin_or_correct_user, only: [:edit, :update]
   before_action :admin_user,   only: [:index, :destroy]
-  
   
   def index
    @users = User.paginate(page: params[:page]).search(params[:search])
@@ -44,9 +43,14 @@ class UsersController < ApplicationController
       User.find_by(id: application.app_user_id).name
     end
   
-    #勤怠変更一覧を取得
+    #勤怠変更一覧を取得(申請)
      @edit_overwork_check = Attendance.where("over_time_edit_state= '1' ")
      @edit_applications = @edit_overwork_check.group_by do |application|
+       User.find_by(id: application.user_id).name
+     end
+    #勤怠変更一覧を取得(承認)
+     @edit_overwork_check1 = Attendance.where("over_time_edit_state= '2' ")
+     @edit_log_applications = @edit_overwork_check1.group_by do |application|
        User.find_by(id: application.user_id).name
      end
 

@@ -49,8 +49,7 @@
                           :style=>"color:white;", class: "btn btn-sm btn-primary" %>
 <%= link_to "CSV", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
                           :style=>"color:white;", class: "btn btn-sm btn-primary", id: "csv"  %>
-<%= link_to "勤怠修正ログ(承認済)", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
-                          :style=>"color:white;", class: "btn btn-sm btn-primary" %>
+<%= render "work_log" %>                          
 <% end %>
 
 <table class="table table-bordered table-striped table-condensed">
