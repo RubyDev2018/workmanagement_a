@@ -66,14 +66,31 @@
               <!-- 在社時間の表示  -->
               <td class="table-body">
                 <% if !attendance.attendance_time_edit.nil? && !attendance.leaving_time_edit.nil? %>
-                  <%= format("%.02d",attendance.leaving_time_edit.hour - attendance.attendance_time_edit.hour) %>:<%= format("%.02d",attendance.leaving_time_edit.min - attendance.attendance_time_edit.min)%>
+                  <%= format("%.2f", (Time.new(attendance.leaving_time_edit.year, 
+                      attendance.leaving_time_edit.month, 
+                      attendance.leaving_time_edit.day, 
+                      attendance.leaving_time_edit.hour, 
+                      attendance.leaving_time_edit.min) - 
+                      Time.new(attendance.attendance_time_edit.year, attendance.attendance_time_edit.month, 
+                      attendance.attendance_time_edit.day, attendance.attendance_time_edit.hour, 
+                      attendance.attendance_time_edit.min))/3600)%>
                 <% end %>
               </td>
             <% else %>
               <!-- 在社時間の表示  -->
               <td class="table-body">
                 <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
-                  <%= format("%.02d",attendance.leaving_time.hour - attendance.attendance_time.hour) %>:<%= format("%.02d",attendance.leaving_time.min - attendance.attendance_time.min)%>
+                  <%= format("%.2f", 
+                  (Time.new(attendance.leaving_time.year, 
+                      attendance.leaving_time.month, 
+                      attendance.leaving_time.day, 
+                      attendance.leaving_time.hour, 
+                      attendance.leaving_time.min) - 
+                   Time.new(attendance.attendance_time.year, 
+                      attendance.attendance_time.month, 
+                      attendance.attendance_time.day, 
+                      attendance.attendance_time.hour, 
+                      attendance.attendance_time.min))/3600 )%>
                 <% end %>
               </td>        
             <% end %>

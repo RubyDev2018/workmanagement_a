@@ -234,7 +234,7 @@
           <% elsif @one_month_attendance.denial? %>
             <%= User.find_by(id: @one_month_attendance.auth_user_id).name %>から否認
           <% end %>
-        
+        <% if current_user == @user%>
           <%= form_for(@new_one_month_attendance, url: onemonth_application_url, :html => {:class => "one-month-attendance-form"}) do |f| %>
             <%= f.hidden_field :app_user_id, :value => "#{@user.id}"%> <!--@user.idの情報をapp_user_idに渡す-->
             <%= f.hidden_field :app_date, :value => "#{@first_day}"%>
@@ -244,7 +244,7 @@
                   {:class => "form-control auth_user_id"} %>  
             <%= f.submit "申請", class: "btn btn-lg btn-primary superior_app" %>
           <% end %>
-        
+       <% end %>
       </td>
     </tr>
   </tbody>

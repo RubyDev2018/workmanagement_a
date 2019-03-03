@@ -254,7 +254,7 @@ class UsersController < ApplicationController
     
     # 上長の申請先が空の場合
     if params[:one_month_work][:auth_user_id].blank?
-      flash[:danger] = "所属長の指定をしてくだい"
+      flash[:danger] = "所属長を指定してくだい"
       redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_work][:first_day] })
       return
     end

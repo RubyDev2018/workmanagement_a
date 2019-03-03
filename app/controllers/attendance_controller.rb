@@ -83,25 +83,84 @@ class AttendanceController < ApplicationController
       attendance.update_attributes(item.permit(:remarks))
     end  
 
-    if !item["authorizer_user_id"].blank?
-      attendance.applying1!
-      attendance.update_attributes(item.permit(:authorizer_user_id))
-      #@user.update_attributes(applied_last_time_user_id: item[:authorizer_user_id_of_attendance])
-    end
-    # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
-    if !item["attendance_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
-      attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time(4i)"].to_i, item["attendance_time(5i)"].to_i))
-    end 
-    if !item["leaving_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
-      attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
-    end
+
+
     
     # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
-    if !item["attendance_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
-      attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time_edit(4i)"].to_i, item["attendance_time_edit(5i)"].to_i))
-    end 
-    if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
-      attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
+    if !params[:check].blank? && !item["authorizer_user_id"].blank?
+        check = item["leaving_time(3i)"].to_i*24*60 + 24*60
+      if (item["attendance_time(3i)"].to_i*24*60 + item["attendance_time(4i)"].to_i*60 + item["attendance_time(5i)"].to_i) > (check + item["leaving_time(4i)"].to_i*60 + item["leaving_time(5i)"].to_i)
+          flash[:danger] = '退社時間>出社時間となるよう修正してください'
+          redirect_back(fallback_location: root_path) and return
+          return
+      else    
+        if !item["attendance_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
+          attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time(4i)"].to_i, item["attendance_time(5i)"].to_i))
+        end 
+        if !item["leaving_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
+          attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
+        end
+        if !item["authorizer_user_id"].blank?
+          attendance.applying1!
+          attendance.update_attributes(item.permit(:authorizer_user_id))
+        end
+      end
+    elsif !item["authorizer_user_id"].blank?
+      if (item["attendance_time(3i)"].to_i*24*60 + item["attendance_time(4i)"].to_i*60 + item["attendance_time(5i)"].to_i) > (item["leaving_time(3i)"].to_i*24*60 + item["leaving_time(4i)"].to_i*60 + item["leaving_time(5i)"].to_i)
+          flash[:danger] = '退社時間>出社時間となるよう修正してください'
+          redirect_back(fallback_location: root_path) and return
+          return
+      else    
+        if !item["attendance_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
+          attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time(4i)"].to_i, item["attendance_time(5i)"].to_i))
+        end 
+        if !item["leaving_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
+          attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
+        end
+        if !item["authorizer_user_id"].blank?
+          attendance.applying1!
+          attendance.update_attributes(item.permit(:authorizer_user_id))
+        end        
+      end
+    end
+    
+    if !params[:check].blank? && !item["authorizer_user_id"].blank?
+      check = item["leaving_time_edit(3i)"].to_i*24*60 + 24*60
+      # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
+      if (item["attendance_time_edit(3i)"].to_i*24*60 + item["attendance_time_edit(4i)"].to_i*60 + item["attendance_time_edit(5i)"].to_i) > (check + item["leaving_time_edit(4i)"].to_i*60 + item["leaving_time_edit(5i)"].to_i)
+          flash[:danger] = '退社時間>出社時間となるよう修正してください'
+          redirect_back(fallback_location: root_path) and return
+          return
+      else
+        if !item["attendance_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
+          attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time_edit(4i)"].to_i, item["attendance_time_edit(5i)"].to_i))
+        end 
+        if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
+          attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
+        end
+        if !item["authorizer_user_id"].blank?
+          attendance.applying1!
+          attendance.update_attributes(item.permit(:authorizer_user_id))
+        end        
+      end
+    elsif !item["authorizer_user_id"].blank?
+      # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
+      if (item["attendance_time_edit(3i)"].to_i*24*60 + item["attendance_time_edit(4i)"].to_i*60 + item["attendance_time_edit(5i)"].to_i) > (item["leaving_time_edit(3i)"].to_i*24*60 + item["leaving_time_edit(4i)"].to_i*60 + item["leaving_time_edit(5i)"].to_i)
+          flash[:danger] = '退社時間>出社時間となるよう修正してください'
+          redirect_back(fallback_location: root_path) and return
+          return
+      else  
+        if !item["attendance_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
+          attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time_edit(4i)"].to_i, item["attendance_time_edit(5i)"].to_i))
+        end 
+        if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
+          attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
+        end
+        if !item["authorizer_user_id"].blank?
+          attendance.applying1!
+          attendance.update_attributes(item.permit(:authorizer_user_id))
+        end
+      end
     end
     
   end
@@ -167,13 +226,13 @@ class AttendanceController < ApplicationController
     if !params[:check].blank?
       check = params[:attendance]["expected_end_time(3i)"].to_i*24*60 + 24*60
       if (params[:attendance]["expected_end_time(3i)"].to_i*24*60  + params[:attendance][:specified_work_end_time].to_time.hour.to_i*60 + params[:attendance][:specified_work_end_time].to_time.min.to_i) > ( check + params[:attendance]["expected_end_time(4i)"].to_i*60 + params[:attendance]["expected_end_time(5i)"].to_i)
-        flash[:danger] = '終了予定時刻>指定勤務終了時間となるようにしてください'
+        flash[:danger] = '終了予定時刻>指定勤務終了時間となるよう修正してください'
               redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
         return
       end
     else 
       if (params[:attendance]["expected_end_time(3i)"].to_i*24*60  + params[:attendance][:specified_work_end_time].to_time.hour.to_i*60 + params[:attendance][:specified_work_end_time].to_time.min.to_i) > ( params[:attendance]["expected_end_time(3i)"].to_i*24*60 + params[:attendance]["expected_end_time(4i)"].to_i*60 + params[:attendance]["expected_end_time(5i)"].to_i)
-        flash[:danger] = '終了予定時刻>指定勤務終了時間となるようにしてください'
+        flash[:danger] = '終了予定時刻>指定勤務終了時間となるよう修正してください'
               redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
         return
       end  
