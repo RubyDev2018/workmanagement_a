@@ -1,0 +1,15 @@
+
+[1mFrom:[0m /home/ec2-user/environment/work_management/app/controllers/users_controller.rb @ line 42 UsersController#show:
+
+    [1;34m37[0m:     @one_month_work_check = [1;34;4mOneMonthWork[0m.where([31m[1;31m"[0m[31mapplication_state= '1' [1;31m"[0m[31m[0m)
+    [1;34m38[0m:     
+    [1;34m39[0m:     @one_month_work_check1 = [1;34;4mOneMonthWork[0m.where([35mauth_user_id[0m: @user.id, [35mapplication_state[0m: [33m:applying[0m)
+    [1;34m40[0m:     [1;34m# 存在しないuserは除外[0m
+    [1;34m41[0m:     binding.pry
+ => [1;34m42[0m:     @one_month_work_check1 = @one_month_work_check1.select{ |x| ![1;34;4mUser[0m.find_by([35mid[0m: x.app_user_id).nil? }
+    [1;34m43[0m:     [1;34m# 名前ごとに分類[0m
+    [1;34m44[0m:     @one_month_applications = @one_month_work_check1.group_by [32mdo[0m |application|
+    [1;34m45[0m:       [1;34;4mUser[0m.find_by([35mid[0m: application.app_user_id).name
+    [1;34m46[0m:     [32mend[0m
+    [1;34m47[0m:     
+

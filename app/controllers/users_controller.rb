@@ -18,19 +18,44 @@ class UsersController < ApplicationController
     end  
   end
   
+  def show_confirm
+    @user = User.find(params[:id])
+   
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
+  end
+  
   # Get /users/:id
   def show
     #=> app/views/users/show.html
     @user = User.find(params[:id])
-    @superior_users = User.all
+    #上長ユーザを全取得し、上長のみを取得
+    @superior_users = User.where.not(id: @user.id, superior: false)
+  
+    #http://railsdoc.com/references/where(配列で指定)    
+    # 残業申請一覧を取得
+    @overwork_check = Attendance.where("over_time_state= '1' ")
+    @overtime_applications = @overwork_check.group_by do |application|
+      User.find_by(id: application.user_id).name
+    end
     
-    
+    #1ヶ月分の勤怠情報を取得
+    @one_month_work_check = OneMonthWork.where("application_state= '1' ")
+    @one_month_applications = @one_month_work_check.group_by do |application|
+      User.find_by(id: application.app_user_id).name
+    end
+  
+    #勤怠変更一覧を取得
+     @edit_overwork_check = Attendance.where("over_time_edit_state= '1' ")
+     @edit_applications = @edit_overwork_check.group_by do |application|
+       User.find_by(id: application.user_id).name
+     end
+
     # 曜日表示用に使用する
     @youbi = %w[日 月 火 水 木 金 土]
     
     #基本情報
     @basic_info = BasicInfo.find_by(id: 1)
-    
+  
     # 既に表示月があれば、表示月を取得する
     if !params[:first_day].nil?
       #https://techacademy.jp/magazine/18710
@@ -39,7 +64,7 @@ class UsersController < ApplicationController
       # 表示月が無ければ、今月分を表示
       @first_day = Date.new(Date.today.year, Date.today.month, 1)
     end
-    #最��日を取得する
+    #最終日を取得する
     @last_day = @first_day.end_of_month
 
     # 今月の初日から最終日の期間分を取得
@@ -53,6 +78,12 @@ class UsersController < ApplicationController
       end
     end
     
+    # 自身の所属長承認状態取得
+    @one_month_attendance = OneMonthWork.find_by(app_user_id: @user.id, app_date: @first_day)  
+  
+    #申請用に新規作成
+    @new_one_month_attendance = OneMonthWork.new(app_user_id: @user.id)
+  
     # 表示期間の勤怠データを日付順にソートして取得 show.html.erb、 <% @attendances.each do |attendance| %>からの情報
     # モデル.where.not(条件) ※WHEREと一緒に使用し、条件式に一致しないものを取得する
     # User.where.not("name = 'Jon'")
@@ -75,7 +106,7 @@ class UsersController < ApplicationController
         @work_sum_min   =0
       end  
     end
-    
+
     #基本時間・指定勤務時間・総合勤務時間初期値入力
     @basic_specified_work_info = 0
     @attendance_sum_hour = 0
@@ -88,7 +119,6 @@ class UsersController < ApplicationController
     @attendance_sum_hour = @attendance_days*@basic_work_info_hour 
     @attendance_sum_min = @attendance_days*@basic_work_info_min
     
-
     # 検索拡張機能として.search(params[:search])を追加    
     @microposts = @user.microposts.paginate(page: params[:page]).search(params[:search])
   end
@@ -138,7 +168,6 @@ class UsersController < ApplicationController
       end
     end
   end
-  
   
   # Post /users
   def create
@@ -215,6 +244,40 @@ class UsersController < ApplicationController
     end
   end
   
+  # 1ヵ月分の勤怠申請
+  def onemonth_application
+    @user = User.find_by(id: params[:one_month_work][:app_user_id])
+    
+    # 上長の申請先が空の場合
+    if params[:one_month_work][:auth_user_id].blank?
+      flash[:danger] = "所属長の指定をしてくだい"
+      redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_work][:first_day] })
+      return
+    end
+    
+    @one_month_work = OneMonthWork.find_by(app_user_id: params[:one_month_work][:app_user_id], app_date: params[:one_month_work][:app_date])
+    if @one_month_work.nil?
+      @one_month_work = OneMonthWork.new(one_month_attendance_params)
+      if !@one_month_work.save
+        flash[:error] = "所属長承認の申請に失敗しました"
+        redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_work][:first_day] })
+        return
+      end
+    else
+      if !@one_month_work.update_attributes(one_month_attendance_params)
+        flash[:error] = "所属長承認の申請に失敗しました"
+        redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_work][:first_day] })
+        return
+      end
+    end    
+      
+    # 申請者の番号も保持
+    @one_month_work.applying!
+    @user.update_attributes(applied_user_id: @one_month_work.auth_user_id)
+    flash[:success] = "所属長承認申請しました"
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:one_month_work][:first_day] })
+  end
+  
   # DELETE /users/:id
   def destroy
     User.find(params[:id]).destroy
@@ -259,6 +322,10 @@ class UsersController < ApplicationController
     
     def basic_info_params
       params.require(:basic_info).permit(:basic_work_time, :specified_work_time)
+    end
+    
+    def one_month_attendance_params
+      params.require(:one_month_work).permit(:app_user_id, :auth_user_id, :app_date, :app_state)
     end
   
     # ログイン済みユーザーかどうか確認

@@ -12,8 +12,10 @@
       <th rowspan="1" class="table-header">曜日</th>
       <th colspan="1" class="table-header">出社</th>
       <th colspan="1" class="table-header">退社</th>
+      <th colspan="1" class="table-header">翌日</th>
       <th rowspan="1" class="table-header">在社時間</th>
       <th rowspan="1" class="table-header">備考</th>
+      <th rowspan="1" class="table-header">指示者確認㊞</th>
     </tr>
   </thead>
     
@@ -27,42 +29,99 @@
               <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
               <!--曜日-->
               <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
-              
+            <% if attendance.applying1?%>              
+              <!-- 出社時間の表示  -->
+              <td class="table-body">
+                 <%= f.datetime_select :attendance_time_edit, 
+                   {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
+                   {class: "form-control datetime-width attendance_time_edit"} %> 
+              </td>
+              <!-- 退社時間の表示  -->
+              <td class="table-body">
+                <%= f.datetime_select :leaving_time_edit, 
+                  {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
+                  {class: "form-control datetime-width leaving_time_edit"}  %>
+              </td>
+            <% else %>
                 <!-- 出社時間の表示  -->
               <td class="table-body">
                  <%= f.datetime_select :attendance_time, 
                    {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
-                   {class: "form-control datetime-width"} %> 
+                   {class: "form-control datetime-width attendance_time_edit"} %> 
               </td>
                 
               <!-- 退社時間の表示  -->
               <td class="table-body">
                 <%= f.datetime_select :leaving_time, 
                   {discard_year: true, discard_month: true, discard_day: true, include_blank: true}, 
-                  {class: "form-control datetime-width"}  %>
+                  {class: "form-control datetime-width leaving_time_edit"}  %>
+              </td>   
+            <% end %>
+               <!-- 翌日の表示  -->
+              <td class="table-body checkbox">
+                <%= check_box_tag :check %>
               </td>
               
+            <% if attendance.applying1? %>         
+              <!-- 在社時間の表示  -->
+              <td class="table-body">
+                <% if !attendance.attendance_time_edit.nil? && !attendance.leaving_time_edit.nil? %>
+                  <%= format("%.02d",attendance.leaving_time_edit.hour - attendance.attendance_time_edit.hour) %>:<%= format("%.02d",attendance.leaving_time_edit.min - attendance.attendance_time_edit.min)%>
+                <% end %>
+              </td>
+            <% else %>
               <!-- 在社時間の表示  -->
               <td class="table-body">
                 <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
-                   <%= format("%.02d",attendance.leaving_time.hour - attendance.attendance_time.hour) %>:<%= format("%.02d",attendance.leaving_time.min - attendance.attendance_time.min)%>
+                  <%= format("%.02d",attendance.leaving_time.hour - attendance.attendance_time.hour) %>:<%= format("%.02d",attendance.leaving_time.min - attendance.attendance_time.min)%>
                 <% end %>
-              </td>
-              
+              </td>        
+            <% end %>
               <!-- 備考の表示  -->
               <td class="table-body">
                 <%= f.text_field :remarks, class: 'form-control'%>
               </td>
+              
+               <!-- 指示者確認㊞の表示  -->
+              <td class="table-body">
+              <% if attendance.applying? || attendance.applying1? %>
+                勤怠変更を<%= User.find_by(id: attendance.authorizer_user_id).name %>へ申請中
+              <% end %>
+              <%= f.collection_select :authorizer_user_id,  #authorizer_user_idはsuperuserのidを示す
+                @superior_users, :id, :name,
+                {:include_blank => true, :selected => 0}, 
+                {:class => "form-control authorizer_user_id"} %>
+              </td>
+                
             </tr>
         <% end %>
      <% end %>  
     </tbody>
   </table>
   <div class="center">
-
       <!--user_urlにて、当該ユーザーの今月月を表示-->
       <%= link_to "キャンセル", user_url(@user, params: { id: @user.id, first_day: @first_day }),
-                style:"width:200px; color:white", class:"btn btn-lg btn-primary" %>
-      <%= fb.submit "編集", style:"width:200px", class: "btn btn-lg btn-primary" %>
+                style:"width:200px; color:white", class:"btn btn-lg btn-primary cancel" %>
+      <%= fb.submit "編集", style:"width:200px", class: "btn btn-lg btn-primary modify" %>
   </div>
    <% end %>    
+   
+<script>
+    $('.cancel').click(function(){
+       if(!confirm('キャンセルしますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
+    });
+    
+    $('.modify').click(function(){
+       if(!confirm('勤怠の一括編集をしますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
+    });
+</script>

@@ -1,0 +1,97 @@
+<!--残業のお知らせモダール表示-->
+
+<div class="modal fade" id="modal-overwork" class="white-popup mfp-with-anim mfp-hide">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" align="center">
+      <%= form_tag overtime_application_path, method: :post do %>
+      <%= hidden_field_tag :id, @user.id %>
+      <%= hidden_field_tag :first_day, @first_day %>  
+      <% @overtime_applications.each do |name, attendances| %>
+        <h4 align="center">【 <%= name %> からの残業申請】</h4>
+        <table class="txt1 table table-bordered table-striped table-condensed table-status">
+          <thead>
+            <tr>
+              <th class="table-header">日付</th>
+              <th class="table-header">曜日</th>
+              <th class="table-header">終了予定時間</th>
+              <th class="table-header">指定勤務終了時間</th>
+              <th class="table-header">時間外時間</th>
+              <th class="table-header">業務処理内容</th>
+              <th class="table-header">指示者確認㊞</th>
+              <th class="table-header">変更</th>
+              <th class="table-header">勤怠を確認する</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% attendances.each do |attendance| %>
+              <%= fields_for("attendance[]", attendance) do |f| %>
+                <tr class="overtime_application">
+                  <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
+                  <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
+                  <!-- 終了予定時間の表示  -->
+                  <td class="table-body">
+                    <%= attendance.expected_end_time.hour if !attendance.expected_end_time.blank? %> : <%= attendance.expected_end_time.min if !attendance.expected_end_time.blank? %>
+                  </td>
+                  <!-- 指定勤務終了時間の表示  -->
+                  <td class="table-body">
+                    <%= format("%.2f", ((User.find_by(name: name).specified_work_end_time.strftime("%H").to_i*60.0) + User.find_by(name: name).specified_work_end_time.strftime("%M").to_i)/60) %>
+                  </td>
+                  <!-- 時間外時間の表示  -->
+                  <td class="table-body">
+                    <% if !User.find_by(name: name).specified_work_end_time.blank? && !attendance.expected_end_time.blank? %>
+                      <% if (Time.new(attendance.expected_end_time.year, 
+                                      attendance.expected_end_time.month,
+                                      attendance.expected_end_time.day,
+                                      attendance.expected_end_time.hour,
+                                      attendance.expected_end_time.min) - 
+                             Time.new(attendance.day.year,
+                                      attendance.day.month,
+                                      attendance.day.day,
+                                      User.find_by(name: name).specified_work_end_time.hour,
+                                      User.find_by(name: name).specified_work_end_time.min)) > 0 %>
+                        <%= format("%.2f", 
+                            (Time.new(attendance.expected_end_time.year,
+                                      attendance.expected_end_time.month,
+                                      attendance.expected_end_time.day,
+                                      attendance.expected_end_time.hour,
+                                      attendance.expected_end_time.min) -
+                             Time.new(attendance.day.year,
+                                      attendance.day.month, 
+                                      attendance.day.day, 
+                                      User.find_by(name: name).specified_work_end_time.hour, 
+                                      User.find_by(name: name).specified_work_end_time.min))/3600) %>
+                  <!-- 業務処理内容の表示  -->
+                  <td class="table-body">
+                    <%= attendance.business_content %>
+                  </td>
+                  <!-- 指示者確認㊞の表示  -->
+                  <td class="table-body">
+                    <%= f.select :over_time_state, [["なし", "nothing"],["申請中", "applying"],
+                                                      ["承認", "approval"],["否認", "denial"]], 
+                                                      {prompt: ""}, { class: 'form-control'} %>
+                  </td>
+                  <!-- 変更の表示  -->
+                  <td class="table-body">
+                    <%= check_box_tag 'check[]', attendance.id %>
+                  </td>
+                  <!-- 申請者の勤怠を確認するボタンの表示  -->
+                  <td class="table-body">
+                    <%= link_to "確認", show_url(params: { id: attendance.user_id, first_day: attendance.day.beginning_of_month }), method: :get, style:"color:white", class: 'btn btn-default btn-primary' %>
+                  </td>
+                      <% end %>
+                    <% end %>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      <div align="center"><%= submit_tag "変更を送信する", style:"width:200px", class: "btn btn-lg btn-primary" %></div>
+    <% end %>
+        
+        
+      </div>
+    </div>
+  </div>
+</div>  

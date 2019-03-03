@@ -31,9 +31,18 @@ class AttendanceController < ApplicationController
   def attendance_edit
     if current_user
     @user = User.find(params[:id])
-    end    
+    end
+    
+    #上長ユーザを全取得し、上長のみを取得
+    @superior_users = User.where.not(id: @user.id, superior: false)
+    
     # 曜日表示用に使用する
     @youbi = %w[日 月 火 水 木 金 土]
+    
+    # 上長ユーザを全取得し、上長のみを取得
+    #申請が承諾されたidを取得
+    #@example = User.where.not(id: @user.id, superior: false).each {|s| ids.push(s.id) if s.id != @user.applied_user_id }
+    @superior_users = User.where.not(id: @user.id, superior: false)
 
      # 既に表示月があれば、表示月を取得する
     if !params[:first_day].nil?
@@ -63,33 +72,76 @@ class AttendanceController < ApplicationController
    @user = User.find(params[:id])  
    #当月の各日付ごとに出社時間及び退社時間をチェックする
    params[:attendance].each do |id, item|
-    attendance = Attendance.find(id)
-    # 出勤・退社時間がblankであれば、出勤・退社時刻にnilを返す
-    if item["attendance_time(4i)"].blank?
-      attendance.update_attributes(attendance_time: nil)
-    elsif item["leaving_time(4i)"].blank?
-      attendance.update_attributes(leaving_time: nil)  
-    end
-    # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
-    if !item["attendance_time(4i)"].blank? 
-      attendance.update_attributes(item.permit(:attendance_time))
-    end 
-    
-    if !item["leaving_time(4i)"].blank?
-      attendance.update_attributes(item.permit(:leaving_time))
+   attendance = Attendance.find(id)
+
+    # 翌日チェックONなら基本時間から終了予定時間を＋1日する
+    if !item["check"].blank?
+      attendance.update_column(:expected_end_time, attendance.expected_end_time+1.day)
     end
     
     if !item["remarks"].blank?
       attendance.update_attributes(item.permit(:remarks))
     end  
+
+    if !item["authorizer_user_id"].blank?
+      attendance.applying1!
+      attendance.update_attributes(item.permit(:authorizer_user_id))
+      #@user.update_attributes(applied_last_time_user_id: item[:authorizer_user_id_of_attendance])
+    end
+    # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
+    if !item["attendance_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
+      attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time(4i)"].to_i, item["attendance_time(5i)"].to_i))
+    end 
+    if !item["leaving_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
+      attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
+    end
+    
+    # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
+    if !item["attendance_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
+      attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time_edit(4i)"].to_i, item["attendance_time_edit(5i)"].to_i))
+    end 
+    if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
+      attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
+    end
     
   end
    #user_urlにて、当該ユーザーの今月月を表示   
    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end 
-
-  def oneday_overtime
+  
+  #【勤怠変更申請のお知らせ】の更新
+  def update_applied_attendance
+    # 変更チェックが1つ以上で勤怠変更情報を更新
+    if !params[:check].blank?
+      @attendances = Attendance.where("id in (?)", params[:over_time_edit_state])
+      params[:attendance].each do |id, item|
+        # 更新チェックがなければ何もしない
+        if !params[:check].include?(id)
+          next
+        end
+        
+        attendance = Attendance.find(id)
+        if attendance.blank?
+          next
+        end
+        
+        # 申請情報更新
+        attendance.update_attributes(item.permit(:over_time_edit_state))
+        
+        if attendance.approval1?
+          # 承認された場合は出勤/退勤時刻を上書きする
+          attendance.update_attributes(attendance_time: attendance.attendance_time_edit, leaving_time: attendance.leaving_time_edit)
+        end
+      end
+    end
+    
+    @user = User.find(params[:id])
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
+  end
+   
+  def oneday_overtime #1日分の残業申請
     @user = User.find(params[:attendance][:user_id])
+    
     # 終了予定時刻がNULLなら更新しない
     if params[:attendance]["expected_end_time(4i)"].blank? || params[:attendance]["expected_end_time(5i)"].blank?
       flash[:danger] = "残業申請時間を記入してください"
@@ -97,38 +149,111 @@ class AttendanceController < ApplicationController
       return
     end
      
-     
     # 申請先が空なら何もしない
     if params[:attendance][:authorizer_user_id].blank?
       flash[:danger] = "残業申請の申請先が空です"
       redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
       return
     end
-
+    
     attendance = Attendance.find(params[:attendance][:id]) 
-    attendance.applying!
-     #条件追記
-     params[:attendance][:over_time_state] = 1
-    attendance.authorizer_user_id = params[:attendance][:authorizer_user_id] 
-      @superior_users1 = User.find_by(id: attendance.authorizer_user_id).name
+    # 残業申請時間が−の場合
     
-     attendance.update_attributes(attendance_params)
-     
+    # 翌日チェックONなら終了予定時間を＋1日する
+    if !params[:check].blank?
+      check = params[:attendance]["expected_end_time(3i)"].to_i*24*60 + 24*60
+      if (params[:attendance]["expected_end_time(3i)"].to_i*24*60  + params[:attendance][:specified_work_end_time].to_time.hour.to_i*60 + params[:attendance][:specified_work_end_time].to_time.min.to_i) > ( check + params[:attendance]["expected_end_time(4i)"].to_i*60 + params[:attendance]["expected_end_time(5i)"].to_i)
+        flash[:danger] = '終了予定時刻>指定勤務終了時間となるようにしてください'
+              redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
+        return
+      end
+    else 
+      if (params[:attendance]["expected_end_time(3i)"].to_i*24*60  + params[:attendance][:specified_work_end_time].to_time.hour.to_i*60 + params[:attendance][:specified_work_end_time].to_time.min.to_i) > ( params[:attendance]["expected_end_time(3i)"].to_i*24*60 + params[:attendance]["expected_end_time(4i)"].to_i*60 + params[:attendance]["expected_end_time(5i)"].to_i)
+        flash[:danger] = '終了予定時刻>指定勤務終了時間となるようにしてください'
+              redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
+        return
+      end  
+    end  
+   
+    # 申請者が入力されていたら『申請中』に変更する
+    if !params[:attendance][:authorizer_user_id].blank?
+      attendance.applying!
+      # 申請者の番号も保持
+      @user.update_attributes(applied_user_id: params[:attendance][:authorizer_user_id])
+    else
+      # 空なら上書きで空とならないよう既存のものをセット
+      params[:attendance][:authorizer_user_id] = attendance.authorizer_user_id
+    end
+    attendance.update_attributes(params.require(:attendance).permit(:business_content, :authorizer_user_id, :over_time_state))
 
-
-       # 終了予定時間があれば更新
-        if !params[:attendance]["expected_end_time(4i)"].blank? || !params[:attendance]["expected_end_time(5i)"].blank?
-          attendance.update_column(:expected_end_time, 
-          Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, 
-          params[:attendance]["expected_end_time(4i)"].to_i, params[:attendance]["expected_end_time(5i)"].to_i))
-        end
-    
+    # 終了予定時間があれば更新
+    if !params[:attendance]["expected_end_time(4i)"].blank? || !params[:attendance]["expected_end_time(5i)"].blank?
+      attendance.update_column(:expected_end_time, 
+      Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, 
+      params[:attendance]["expected_end_time(4i)"].to_i, params[:attendance]["expected_end_time(5i)"].to_i))
+    end
       # 翌日チェックONなら終了予定時間を＋1日する
         if !params[:check].blank?
           attendance.update_column(:expected_end_time, attendance.expected_end_time+1.day)
         end
     flash[:success] = "残業申請しました"
     redirect_to user_url(@user, params: { id: @user.id, first_day: params[:attendance][:first_day] })
+  end
+  
+  def overtime_application
+        @user = User.find(params[:id])
+    # 変更チェックが1つ以上で各残業申請情報を更新
+    if !params[:check].blank?
+      params[:attendance].each do |id, item|
+        # 更新チェックがなければ何もしない
+        if !params[:check].include?(id)
+          next
+        end
+        
+        attendance = Attendance.find(id)
+        # 申請者が入力されていたら『申請中』に変更する
+        if !item[:authorizer_user_id].blank?
+          attendance.applying!
+         
+          @user.update_attributes(applied_user_id: item[:authorizer_user_id])
+        else
+          # 空なら上書きで空とならないよう既存のものをセット
+          item[:authorizer_user_id] = attendance.authorizer_user_id
+        end
+        attendance.update_attributes(item.permit(:business_content, :authorizer_user_id, :over_time_state))
+        
+        # 終了予定時間があれば更新
+        if !item["expected_end_time(4i)"].blank? || !item["expected_end_time(5i)"].blank?
+          attendance.update_column(:expected_end_time, 
+          Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, 
+          params[:attendance]["expected_end_time(4i)"].to_i, params[:attendance]["expected_end_time(5i)"].to_i))
+        end
+      end
+    end
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
+  end
+  
+
+  # 1ヵ月分の勤怠を承認/否認等を行う
+  def update_onemonth_applied_attendance
+    # 変更チェックが1つ以上で勤怠変更情報を更新
+    if !params[:check].blank?
+      params[:application].each do |id, item|
+        # 更新チェックがなければ何もしない
+        if !params[:check].include?(id)
+          next
+        end
+        attendance = OneMonthWork.find(id)
+        if attendance.blank?
+          next
+        end
+        # 申請情報更新
+        attendance.update_attributes(item.permit(:application_state))
+      end
+    end
+      
+    @user = User.find(params[:id])
+    redirect_to user_url(@user, params: { id: @user.id, first_day: params[:first_day] })
   end
 
     private

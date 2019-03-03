@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190212155312) do
+ActiveRecord::Schema.define(version: 20190224045254) do
 
   create_table "attendances", force: :cascade do |t|
     t.datetime "attendance_time"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20190212155312) do
     t.text "business_content"
     t.integer "over_time_state", default: 0
     t.integer "authorizer_user_id"
+    t.integer "over_time_edit_state", default: 0
   end
 
   create_table "base_points", force: :cascade do |t|
@@ -51,6 +52,15 @@ ActiveRecord::Schema.define(version: 20190212155312) do
     t.string "picture"
     t.index ["user_id", "created_at"], name: "index_microposts_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_microposts_on_user_id"
+  end
+
+  create_table "one_month_works", force: :cascade do |t|
+    t.integer "app_user_id"
+    t.integer "auth_user_id"
+    t.date "app_date"
+    t.integer "application_state", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "relationships", force: :cascade do |t|
@@ -91,6 +101,8 @@ ActiveRecord::Schema.define(version: 20190212155312) do
     t.integer "employee_number"
     t.datetime "expected_end_time"
     t.boolean "superior", default: false
+    t.integer "applied_user_id", default: 0
+    t.boolean "superior_b", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

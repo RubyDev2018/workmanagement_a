@@ -1,0 +1,50 @@
+<!--所属長承認申請のお知らせモダール表示-->
+<div class="modal fade" id="modal-one_month_work" class="white-popup mfp-with-anim mfp-hide">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" align="center">
+      <%= form_tag update_onemonth_applied_attendance_path, method: :post do %>
+        <%= hidden_field_tag :id, @user.id %>
+        <%= hidden_field_tag :first_day, @first_day %>  
+        <%= hidden_field_tag :app_date, @first_day %>
+          <% @one_month_applications.each do |name, applications| %>
+            <h4 align="center">【 <%= name %> からの1ヵ月分勤怠申請】</h4>
+            <table class="txt1 table table-bordered table-striped table-condensed table-status">
+              <thead>
+                <tr>
+                  <th class="table-header">月</th>
+                    <th class="table-header">指示者確認㊞</th>
+                    <th class="table-header">変更</th>
+                    <th class="table-header">勤怠を確認する</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% applications.each do |application| %>
+                  <%= fields_for("application[]", application) do |f| %>
+                    <tr>
+                      <!-- 月 -->
+                      <td class="table-body"><%= application.app_date.month %>月</td>
+                      <!-- 指示者確認㊞の表示  -->
+                      <td class="table-body">
+                       <%= f.select :application_state, [["なし", "nothing"],["申請中", "applying"],["承認", "approval"],["否認", "denial"]], {prompt: ""}, { class: 'form-control'} %>
+                      </td>
+                      <!-- 変更の表示  -->
+                      <td class="table-body">
+                        <%= check_box_tag 'check[]', application.id %>
+                      </td>
+                      <!-- 申請者の勤怠を確認するボタンの表示  -->
+                      <td class="table-body">
+                        <%= link_to "確認", show_url(params: { id: application.app_user_id, first_day: application.app_date }), method: :get, style:"color:white", class: 'btn btn-default btn-primary' %>
+                      </td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
+            </table>
+          <% end %>
+        <div align="center"><%= submit_tag "変更を送信する", style:"width:200px", class: "btn btn-lg btn-primary" %></div>
+      <% end %>
+      </div>
+    </div>
+  </div>
+</div>

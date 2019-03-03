@@ -1,0 +1,130 @@
+<!--【勤怠変更申請のお知らせ】モダール表示-->
+<div class="modal fade" id="modal-edit_overwork" class="white-popup mfp-with-anim mfp-hide">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" align="center">
+      <%= form_tag update_applied_attendance_path, method: :post do %>
+        <%= hidden_field_tag :id, @user.id %>
+        <%= hidden_field_tag :first_day, @first_day %>  
+        <% @edit_applications.each do |name, attendances| %>
+        <h4 align="center">【 <%= name %> からの勤怠変更申請】</h4>
+        <table class="txt1 table table-bordered table-striped table-condensed table-status">
+          <thead>
+            <tr>
+              <th rowspan="3" class="table-header">日付</th>
+              <th rowspan="3" class="table-header">曜日</th>
+              <th colspan="4" class="table-header">変更前</th>
+              <th colspan="4" class="table-header">変更後</th>
+              <th rowspan="3" class="table-header">備考</th>
+              <th rowspan="3" class="table-header">指示者確認㊞</th>
+              <th rowspan="3" class="table-header">変更</th>
+              <th rowspan="3" class="table-header">勤怠を確認する</th>
+            </tr>
+            <tr>
+              <th colspan="2" class="table-header">出社</th>
+              <th colspan="2" class="table-header">退社</th>
+              <th colspan="2" class="table-header">出社</th>
+              <th colspan="2" class="table-header">退社</th>
+            </tr>
+            <tr>
+              <th class="table-header">時</th>
+              <th class="table-header">分</th>
+              <th class="table-header">時</th>
+              <th class="table-header">分</th>
+              <th class="table-header">時</th>
+              <th class="table-header">分</th>
+              <th class="table-header">時</th>
+              <th class="table-header">分</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% attendances.each do |attendance| %>
+              <%= fields_for("attendance[]", attendance) do |f| %>
+                <tr class="overtime_application">
+                  <td class="table-body"><%= attendance.day.month %>/<%= attendance.day.day %></td>
+                  <td class="table-body"><%= @youbi[attendance.day.wday] %></td>
+                  <!-- 変更前の表示 -->
+                  <!-- 出社 -->
+                  <!-- 時 -->
+                  <td class="table-body">
+                    <%= attendance.attendance_time.hour if !attendance.attendance_time.blank? %>
+                  </td>
+                  <!-- 分 -->
+                  <td class="table-body">
+                    <%= attendance.attendance_time.min if !attendance.attendance_time.blank? %>
+                  </td>
+                  <!-- 退社 -->
+                  <!-- 時 -->
+                  <td class="table-body">
+                    <%= attendance.leaving_time.hour if !attendance.leaving_time.blank? %>
+                  </td>
+                  <!-- 分 -->
+                  <td class="table-body">
+                    <%= attendance.leaving_time.min if !attendance.leaving_time.blank? %>
+                  </td>
+                  <!-- 変更後の表示 -->
+                  <!-- 出社 -->
+                  <!-- 時 -->
+                  <td class="table-body">
+                    <%= attendance.attendance_time_edit.hour if !attendance.attendance_time_edit.blank? %>
+                  </td>
+                  <!-- 分 -->
+                  <td class="table-body">
+                    <%= attendance.attendance_time_edit.min if !attendance.attendance_time_edit.blank? %>
+                  </td>
+                  <!-- 退社時間(時間) -->
+                  <td class="table-body">
+                    <%= attendance.leaving_time_edit.hour if !attendance.leaving_time_edit.blank? %>
+                  </td>
+                  <!-- 退社時間(分) -->
+                  <td class="table-body">
+                    <%= attendance.leaving_time_edit.min if !attendance.leaving_time_edit.blank? %>
+                  </td>
+                  <!-- 備考 -->
+                  <td class="table-body">
+                    <%= attendance.remarks if !attendance.blank?%>
+                  </td>
+                  <!-- 指示者確認㊞ -->
+                  <td class="table-body">
+                    <%= f.select :over_time_edit_state, [["なし", "nothing1"],["申請中", "applying1"],
+                                                        ["承認", "approval1"],["否認", "denial1"]], 
+                                                        {prompt: ""}, { class: 'form-control'} %>
+                  </td>
+                  <!-- 変更の表示  -->
+                  <td class="table-body">
+                    <%= check_box_tag 'check[]', attendance.id %>
+                  </td>
+                  
+                  <!-- 勤怠を確認する  -->
+                  <td class="table-body">
+                    <%= link_to "確認", show_url(params: { id: attendance.user_id, first_day: attendance.day.beginning_of_month }), method: :get, style:"color:white", class: 'btn btn-default btn-primary' %>
+                  </td>
+                  
+                  <!-- 送信パラメータ  -->
+                    <%= f.hidden_field :attendance_time_edit, :value => "#{attendance.attendance_time_edit}" %>
+                    <%= f.hidden_field :leaving_time_edit, :value => "#{attendance.leaving_time_edit}" %>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      <button type="button" class="btn-lg" data-dismiss="modal" >閉じる</button>
+      <%= submit_tag "変更を送信する", style:"width:170px", class: "btn btn-lg btn-primary" %>
+    <% end %>
+  </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $('.btn').click(function(){
+       if(!confirm('勤怠変更を送信しますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
+    });
+</script>

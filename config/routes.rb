@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get    '/login',   to: 'sessions#new'
   post   '/login',   to: 'sessions#create'
   delete '/logout',  to: 'sessions#destroy'
-
+  
   get  '/help',    to: 'static_pages#help'
   get  '/about',   to: 'static_pages#about'
   get  '/contact', to: 'static_pages#contact'
@@ -19,10 +19,13 @@ Rails.application.routes.draw do
   post '/attendance_edit', to: 'attendance#attendance_edit'
   patch '/attendance_edit', to: 'attendance#attendance_edit'
 
+  #出勤更新
   get  '/update_all', to: 'attendance#update_all'
   post '/update_all', to: 'attendance#update_all'
   patch '/update_all', to: 'attendance#update_all'
-
+  #勤怠変更お知らせ URL
+  post '/attendance/applied', to: 'attendance#update_applied_attendance', as: 'update_applied_attendance'
+  
   # 基本情報
   get '/basic_info',   to: 'users#edit_basic_info'
   patch '/basic_info',   to: 'users#update_basic_info'
@@ -54,10 +57,16 @@ Rails.application.routes.draw do
   
   # 残業申請関係
   post '/attendance/oneday_overtime', to: 'attendance#oneday_overtime', as: 'oneday_overtime'
+  post '/attendance/overtime', to: 'attendance#overtime_application', as: 'overtime_application'
   
   # 出勤中社員一覧
   get '/attendance_employees', to: 'users#attendance_index', as: 'attendance_index'
   
+  # 1ヵ月分勤怠申請
+  post '/users/onemonth', to: 'users#onemonth_application', as: 'onemonth_application'
+  post '/attendance/update_onemonth', to: 'attendance#update_onemonth_applied_attendance', as: 'update_onemonth_applied_attendance'
+  #show 確認
+  get '/show_confirm', to: 'users#show_confirm', as: 'show'
   
 end
 

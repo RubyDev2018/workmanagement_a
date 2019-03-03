@@ -1,0 +1,16 @@
+<% if @user.name %>
+  <% if @overwork_check.count > 0 %>
+    <div class="inline-applicatioins">
+      <a id="overtime" data-toggle="modal" data-target="#modal-overwork">
+        <%= "【残業申請のお知らせ】" %>
+        <%= "#{@overwork_check.count}件の通知があります" %>
+      </a><br>
+    </div>
+    <%= render 'modal_overtime' %>
+<% else %>
+    <div id="blue">
+      <%= "【残業申請のお知らせはありません】" %>
+    </div>
+<% end %>
+
+<% end %>

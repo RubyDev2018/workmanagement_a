@@ -1,0 +1,16 @@
+<% if @user.name %>
+  <% if @one_month_work_check.count > 0 %>
+    <div class="inline-applicatioins">
+      <a id="overtime" data-toggle="modal" data-target="#modal-one_month_work">
+        <%= "【所属長承認申請のお知らせ】" %>
+        <%= "#{@one_month_work_check.count}件の通知があります"%>
+      </a><br>
+    </div>
+     <%= render 'modal_one_month_work' %>
+<% else %>
+    <div id="blue">
+      <%= "【所属長承認申請のお知らせはありません】" %>
+    </div>
+<% end %>
+
+<% end %>

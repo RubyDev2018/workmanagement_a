@@ -6,13 +6,13 @@
     <tr>
       <th class="table-header">
         <%= link_to "◀︎", user_url(params: { id: @user.id, first_day: @first_day.prev_month }), 
-            style:"color:white", class: 'btn btn-default btn-primary' %>  
+            style:"color:white", class: 'btn btn-default btn-primary' if current_user == @user %>  
             　<%= @first_day.strftime("%Y年%m月") %>　時間管理表　
-        <%= link_to "▶︎", user_url(params: { id: @user.id, first_day: @first_day.next_month }), 
-            style:"color:white", class: 'btn btn-default btn-primary' %>
+        <%= link_to "▶︎", user_url(params: { id: @user.id, first_day: @first_day.next_month}), 
+            style:"color:white", class: 'btn btn-default btn-primary'  if current_user == @user %>
      </th>
       <th class="table-header">
-        指定勤務開始時間<%= format("%.2f", ((@user.specified_work_start_time.hour*60.0) + @user.specified_work_start_time.min)/60) if !@user.specified_work_start_time.blank? %>
+        指定勤務開始時間<%= format("%.2f", ((@user.specified_work_start_time.hour*60.0) + @user.specified_work_start_time.min)/60) if !@user.specified_work_start_time.blank?%>
         <br>
         指定勤務終了時間<%= format("%.2f", ((@user.specified_work_end_time.hour*60.0) + @user.specified_work_end_time.min)/60) if !@user.specified_work_end_time.blank? %>
       </th>
@@ -34,13 +34,24 @@
   </thead>
 </table>
 
+<!--【所属長承認申請のお知らせ】モーダル画面へ-->
+<% if current_user == @user %>
+<%= render 'one_month_work'  %>
+<!--【勤怠変更申請のお知らせ】モーダル画面へ-->
+<%= render 'work_edit'  %>
+<!--【残業申請のお知らせ】モーダル画面へ-->
+<%= render 'overtime' %>
+<% end %>
+
 <!--attendance_edit_pathに、userのidと今月の値を渡す-->
+<% if current_user == @user %>
 <%= link_to "勤怠を編集", attendance_edit_url(@attendance, params: { id: @user.id, first_day: @first_day }), 
-                          :style=>"color:white;", class: "btn btn-sm btn-primary"   %>
+                          :style=>"color:white;", class: "btn btn-sm btn-primary" %>
 <%= link_to "CSV", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
-                          :style=>"color:white;", class: "btn btn-sm btn-primary", id: "csv" if current_user == @user%>
+                          :style=>"color:white;", class: "btn btn-sm btn-primary", id: "csv"  %>
 <%= link_to "勤怠修正ログ(承認済)", attendance_table_path(@attendance, params: { id: @user.id, first_day: @first_day, format: :csv}),
-                          :style=>"color:white;", class: "btn btn-sm btn-primary" if current_user == @user%>
+                          :style=>"color:white;", class: "btn btn-sm btn-primary" %>
+<% end %>
 
 <table class="table table-bordered table-striped table-condensed">
   <thead>
@@ -179,8 +190,19 @@
           <!-- 指示者確認㊞  -->
           <td class="table-body">
             <% if attendance.applying? %>
-              残業申請中
-            <% end %>  
+              残業申請を<%= User.find_by(id: attendance.authorizer_user_id).name %>へ申請中
+            <% elsif attendance.approval? %>
+              残業申請を<%= User.find_by(id: attendance.authorizer_user_id).name %>から承認済
+            <% elsif attendance.denial? %> 
+              残業申請を<%= User.find_by(id: attendance.authorizer_user_id).name %>から否認
+            <% end %>
+            <% if attendance.applying1? %>
+              勤怠変更を<%= User.find_by(id: attendance.authorizer_user_id).name %>へ申請中
+            <% elsif attendance.approval1? %>
+            　 勤怠編集を<%= User.find_by(id: attendance.authorizer_user_id).name %>から承認済
+            <% elsif attendance.denial1? %>
+            　 勤怠編集を<%= User.find_by(id: attendance.authorizer_user_id).name %>から否認　 
+            <% end %>　 
           </td>
           
         </tr>
@@ -203,7 +225,27 @@
       </td>
       <td colspan="5" class="table-body"></td>
       <td class="table-body">
-        <%= User.find_by(id: 2).name %>へ申請中
+        所属長承認
+          <% if @one_month_attendance.blank?%>
+            未
+          <% elsif @one_month_attendance.applying? %>
+            <%= User.find_by(id: @one_month_attendance.auth_user_id).name %>へ申請中  
+          <% elsif @one_month_attendance.approval? %>
+            <%= User.find_by(id: @one_month_attendance.auth_user_id).name %>承認済み    
+          <% elsif @one_month_attendance.denial? %>
+            <%= User.find_by(id: @one_month_attendance.auth_user_id).name %>から否認
+          <% end %>
+        
+          <%= form_for(@new_one_month_attendance, url: onemonth_application_url, :html => {:class => "one-month-attendance-form"}) do |f| %>
+            <%= f.hidden_field :app_user_id, :value => "#{@user.id}"%> <!--@user.idの情報をapp_user_idに渡す-->
+            <%= f.hidden_field :app_date, :value => "#{@first_day}"%>
+            <%= f.hidden_field :first_day, :value => "#{@first_day}"%>
+            <%= f.collection_select :auth_user_id, @superior_users, :id, :name,
+                  {:include_blank => true, :selected => 0}, 
+                  {:class => "form-control auth_user_id"} %>  
+            <%= f.submit "申請", class: "btn btn-lg btn-primary superior_app" %>
+          <% end %>
+        
       </td>
     </tr>
   </tbody>
@@ -225,6 +267,7 @@
       <%= f.hidden_field :user_id, :value => "#{@user.id}"%>
       <%= f.hidden_field :id, :value => "#{attendance.id}"%>
       <%= f.hidden_field :first_day, :value => @first_day %>
+      <%= f.hidden_field :specified_work_end_time, :value => "#{@user.specified_work_end_time}"%>
       <table class="table table-bordered table-striped table-condensed">
         <thead>
           <tr>
@@ -258,12 +301,11 @@
             </td>
           <!--指示者確認㊞の表示-->  
             <td class="table-body">
-               <% if attendance.applying? %>
-                 
-                 <%= @superior_users1 %>へ申請中
-               <% end %>   
+               <% if attendance.applying? || attendance.applying1? %>
+                 残業申請を<%= User.find_by(id: attendance.authorizer_user_id).name %>へ申請中
+               <% end %>
               
-               <%= f.collection_select :authorizer_user_id, 
+               <%= f.collection_select :authorizer_user_id,  #authorizer_user_idはsuperuserのidを示す
                   @superior_users, :id, :name,
                   {:include_blank => true, :selected => 0}, 
                   {:class => "form-control authorizer_user_id"} %>
@@ -273,7 +315,7 @@
       	</div>
       <div class="modal-footer center">
 			<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-      <%= f.submit "変更を送信する", style:"width:130px", class: "btn btn-primary" %>
+      <%= f.submit "変更を送信する", style:"width:130px", class: "btn btn-primary over_t" %>
 			</div>
    <% end %>    
       </div>
@@ -285,6 +327,24 @@
 <script>
     $('#csv').click(function(){
        if(!confirm('csvを出力しますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
+    });
+    
+    $('.over_t').click(function(){
+       if(!confirm('残業申請しますか？')){
+              /* キャンセルの時の処理 */
+              return false;
+      　}else{
+            /*　OKの時の処理 */
+    　　}
+    });
+    
+    $('.superior_app').click(function(){
+       if(!confirm('1ヶ月分の勤怠を申請しますか？')){
               /* キャンセルの時の処理 */
               return false;
       　}else{

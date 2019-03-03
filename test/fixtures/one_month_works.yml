@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  app_user_id: 1
+  auth_user_id: 1
+  app_date: 2019-02-24
+  application_state: 1
+
+two:
+  app_user_id: 1
+  auth_user_id: 1
+  app_date: 2019-02-24
+  application_state: 1
