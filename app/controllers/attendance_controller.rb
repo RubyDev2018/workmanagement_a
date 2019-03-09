@@ -83,9 +83,6 @@ class AttendanceController < ApplicationController
       attendance.update_attributes(item.permit(:remarks))
     end  
 
-
-
-    
     # 出勤・退社時間が表記されていれば、出勤・退社時刻を入力する  
     if !params[:check].blank? && !item["authorizer_user_id"].blank?
         check = item["leaving_time(3i)"].to_i*24*60 + 24*60
@@ -115,7 +112,7 @@ class AttendanceController < ApplicationController
           attendance.update_column(:attendance_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["attendance_time(4i)"].to_i, item["attendance_time(5i)"].to_i))
         end 
         if !item["leaving_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
-          attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
+          attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, ckeck, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
         end
         if !item["authorizer_user_id"].blank?
           attendance.applying1!
@@ -137,6 +134,7 @@ class AttendanceController < ApplicationController
         end 
         if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
           attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
+          attendance.update_column(:leaving_time_edit, attendance.leaving_time_edit+1.day)
         end
         if !item["authorizer_user_id"].blank?
           attendance.applying1!
@@ -155,6 +153,7 @@ class AttendanceController < ApplicationController
         end 
         if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
           attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
+          attendance.update_column(:leaving_time_edit, attendance.leaving_time_edit+1.day)
         end
         if !item["authorizer_user_id"].blank?
           attendance.applying1!

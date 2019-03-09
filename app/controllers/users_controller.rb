@@ -232,7 +232,7 @@ class UsersController < ApplicationController
     if @basic_info.update_attributes(basic_info_params) && !@basic_info.basic_work_time.blank? && !@basic_info.specified_work_time.blank?
       #Success
       flash[:success] = "基本情報を更新しました"
-      redirect_to current_user
+      redirect_to basic_info_path
     elsif @basic_info.basic_work_time.blank?  && @basic_info.specified_work_time.blank?
       #Failure
       flash[:danger] = "指定勤務時間及び基本勤務時間を更新して下さい"
