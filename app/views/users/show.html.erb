@@ -136,7 +136,14 @@
           <!-- 在社時間の表示  -->
           <td class="table-body">
             <% if !attendance.attendance_time.nil? && !attendance.leaving_time.nil? %>
-              <%= format("%.02d",attendance.leaving_time.hour - attendance.attendance_time.hour) %>:<%= format("%.02d",attendance.leaving_time.min - attendance.attendance_time.min)%>
+              <%= format("%.2f", (Time.new(attendance.leaving_time.year, 
+                      attendance.leaving_time.month, 
+                      attendance.leaving_time.day, 
+                      attendance.leaving_time.hour, 
+                      attendance.leaving_time.min) - 
+                      Time.new(attendance.attendance_time.year, attendance.attendance_time.month, 
+                      attendance.attendance_time.day, attendance.attendance_time.hour, 
+                      attendance.attendance_time.min))/3600)%>
             <% end %>
           </td>
 
@@ -220,7 +227,7 @@
         在社時間合計→
       </td>
       <td class="table-body">
-        <%= format("%.02d",@work_sum_hour)%>:<%= format("%.02d",@work_sum_min) %>
+        <%= format("%.2f", @work_sum) %>
       </td>
       <td colspan="5" class="table-body"></td>
       <td class="table-body">
