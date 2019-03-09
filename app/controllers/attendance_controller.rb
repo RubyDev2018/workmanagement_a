@@ -96,6 +96,7 @@ class AttendanceController < ApplicationController
         end 
         if !item["leaving_time(4i)"].blank? || !item["attendance_time(5i)"].blank?
           attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time(4i)"].to_i, item["leaving_time(5i)"].to_i))
+          attendance.update_column(:leaving_time_edit, attendance.leaving_time_edit+1.day)
         end
         if !item["authorizer_user_id"].blank?
           attendance.applying1!
@@ -153,7 +154,6 @@ class AttendanceController < ApplicationController
         end 
         if !item["leaving_time_edit(4i)"].blank? || !item["attendance_time_edit(5i)"].blank?
           attendance.update_column(:leaving_time_edit, Time.zone.local(attendance.day.year, attendance.day.month, attendance.day.day, item["leaving_time_edit(4i)"].to_i, item["leaving_time_edit(5i)"].to_i))
-          attendance.update_column(:leaving_time_edit, attendance.leaving_time_edit+1.day)
         end
         if !item["authorizer_user_id"].blank?
           attendance.applying1!
